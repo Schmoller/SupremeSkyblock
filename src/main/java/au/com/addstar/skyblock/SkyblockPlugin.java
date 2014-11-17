@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import au.com.addstar.skyblock.command.BaseCommand;
+
 public class SkyblockPlugin extends JavaPlugin
 {
 	private SkyblockManager mManager;
@@ -14,6 +16,7 @@ public class SkyblockPlugin extends JavaPlugin
 		saveDefaultConfig();
 		
 		mManager = new SkyblockManager(this);
+		new BaseCommand(mManager).registerAs(getCommand("skyblock"));
 		
 		Bukkit.getScheduler().runTask(this, new Runnable()
 		{

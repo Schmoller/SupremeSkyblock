@@ -53,7 +53,15 @@
           <artifactId>sneaky-throw</artifactId>
         </exclusion>
       </exclusions>
+      <optional>true</optional>
     </dependency>
+  	<dependency>
+  	  <groupId>au.com.addstar</groupId>
+  	  <artifactId>Monolith</artifactId>
+  	  <version>1.1.0-SNAPSHOT</version>
+  	  <scope>provided</scope>
+  	  <optional>true</optional>
+  	</dependency>
   </dependencies>
   
   <build>

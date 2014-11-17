@@ -4,3 +4,15 @@ version: ${project.version}
 
 main: au.com.addstar.skyblock.SkyblockPlugin
 load: STARTUP
+
+commands:
+  skyblock:
+    usage: /<command>
+    aliases: [island, sb, is]
+    permission: skyblock.commands.skyblock
+
+permissions:
+  skyblock.commands.skyblock:
+    default: true
+  skyblock.commands.restart:
+    default: true
