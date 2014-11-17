@@ -1,0 +1,5 @@
+name: SupremeSkyblock
+author: Schmoller
+version: ${project.version}
+
+main: au.com.addstar.skyblock.SkyblockPlugin
