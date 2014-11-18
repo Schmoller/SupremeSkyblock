@@ -5,10 +5,13 @@ import java.io.IOException;
 import java.util.UUID;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 
 import au.com.addstar.skyblock.SkyblockWorld;
 
@@ -53,6 +56,33 @@ public class Island
 	{
 		mOwnerName = name;
 		mIsModified = true;
+	}
+	
+	public void clear()
+	{
+		Coord min = getChunkCoord();
+		for (int x = min.getX(); x < min.getX() + mWorld.getIslandChunkSize(); ++x)
+		{
+			for (int z = min.getZ(); z < min.getZ() + mWorld.getIslandChunkSize(); ++z)
+			{
+				Chunk chunk = mWorld.getWorld().getChunkAt(x, z);
+				for (Entity ent : chunk.getEntities())
+				{
+					if (!(ent instanceof HumanEntity))
+						ent.remove();
+				}
+				// FIXME: Entities do not visually remove
+				
+				mWorld.getWorld().regenerateChunk(x, z);
+				
+				// FIXME: Empty chunks are not being sent correctly to the client. They appear as missing chunks causing several client issues
+			}
+		}
+	}
+	
+	public void placeIsland()
+	{
+		mWorld.getManager().getTemplate().placeAt(mIslandOrigin);
 	}
 	
 	public Coord getCoord()

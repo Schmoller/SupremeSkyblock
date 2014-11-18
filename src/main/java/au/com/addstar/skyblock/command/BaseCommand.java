@@ -13,6 +13,8 @@ public class BaseCommand extends RootCommandDispatcher
 		setDefault(new DefaultCommand(manager));
 		registerCommand(new RestartCommand(manager));
 		registerCommand(new InfoCommand(manager));
+		registerCommand(new ConfirmCommand());
+		registerCommand(new CancelCommand());
 		
 		// Admin commands
 		registerCommand(new TemplateCommand(manager));

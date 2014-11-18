@@ -28,3 +28,7 @@ permissions:
     default: op
     children:
       skyblock.commands.info: true
+  skyblock.commands.restart.others:
+    default: op
+    children:
+      skyblock.commands.restart: true

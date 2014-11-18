@@ -76,12 +76,11 @@ public class SkyblockWorld
 		IslandTemplate template = mManager.getTemplate();
 		
 		// Configure the island
-		Location loc = island.getIslandOrigin();
-		island.setIslandSpawn(template.getSpawnLocation(loc));
+		island.setIslandSpawn(template.getSpawnLocation(island.getIslandOrigin()));
 		island.setOwnerName(player.getDisplayName());
 		
 		// Place it
-		template.placeAt(loc);
+		island.placeIsland();
 		
 		return island;
 	}
