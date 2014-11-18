@@ -100,8 +100,8 @@ public class SkyblockWorld
 		int z = location.getBlockZ() >> 4;
 		
 		// island coords
-		x /= mIslandChunkSize;
-		z /= mIslandChunkSize;
+		x = (int)Math.floor(x / (float)mIslandChunkSize);
+		z = (int)Math.floor(z / (float)mIslandChunkSize);
 		
 		return mGrid.get(x, z);
 	}
