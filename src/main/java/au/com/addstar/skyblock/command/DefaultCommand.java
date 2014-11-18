@@ -70,6 +70,7 @@ public class DefaultCommand implements ICommand
 		
 		SkyblockWorld world = mManager.getNextSkyblockWorld();
 		Island island = world.createIsland(player);
+		world.save();
 		
 		Location loc = island.getIslandOrigin();
 		// This is just temporary
