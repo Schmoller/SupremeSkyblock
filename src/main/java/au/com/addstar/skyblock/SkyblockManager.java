@@ -3,10 +3,13 @@ package au.com.addstar.skyblock;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+
+import au.com.addstar.skyblock.island.Island;
 
 public class SkyblockManager
 {
@@ -81,6 +84,18 @@ public class SkyblockManager
 	public SkyblockWorld getSkyblockWorld(World world)
 	{
 		return mWorlds.get(world);
+	}
+	
+	public Island getIsland(UUID owner)
+	{
+		for (SkyblockWorld world : mWorlds.values())
+		{
+			Island is = world.getIsland(owner);
+			if (is != null)
+				return is;
+		}
+		
+		return null;
 	}
 	
 	public int getIslandChunkSize()

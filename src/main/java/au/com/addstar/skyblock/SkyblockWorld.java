@@ -2,6 +2,7 @@ package au.com.addstar.skyblock;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -27,11 +28,14 @@ public class SkyblockWorld
 	
 	private int mIslandChunkSize;
 	
+	private HashMap<UUID, Island> mOwnerMap;
+	
 	public SkyblockWorld(String name, SkyblockManager manager)
 	{
 		mManager = manager;
 		mName = name;
 		mGrid = new IslandGrid();
+		mOwnerMap = new HashMap<UUID, Island>();
 		
 		mIslandChunkSize = manager.getIslandChunkSize();
 	}
@@ -61,8 +65,14 @@ public class SkyblockWorld
 		Coord coords = mGrid.getNextEmpty();
 		Island island = new Island(player.getUniqueId(), coords, this);
 		mGrid.set(island);
+		mOwnerMap.put(player.getUniqueId(), island);
 		
 		return island;
+	}
+	
+	public Island getIsland(UUID owner)
+	{
+		return mOwnerMap.get(owner);
 	}
 	
 	public boolean load()
@@ -122,7 +132,9 @@ public class SkyblockWorld
 			Coord coords = new Coord(Integer.parseInt(strCoords[0]), Integer.parseInt(strCoords[1]));
 			UUID owner = UUID.fromString(section.getString(key));
 			
-			mGrid.set(new Island(owner, coords, this));
+			Island island = new Island(owner, coords, this);
+			mOwnerMap.put(owner, island);
+			mGrid.set(island);
 		}
 	}
 	

@@ -66,19 +66,29 @@ public class DefaultCommand implements ICommand
 	public boolean onCommand( CommandSender sender, String parent, String label, String[] args ) throws BadArgumentException
 	{
 		Player player = (Player)sender;
-		// TODO: Go to existing island
 		
-		SkyblockWorld world = mManager.getNextSkyblockWorld();
-		Island island = world.createIsland(player);
-		world.save();
-		
-		Location loc = island.getIslandOrigin();
-		// This is just temporary
-		loc.getBlock().getRelative(BlockFace.DOWN).setType(Material.STONE);
-		
-		player.teleport(loc);
-		
-		player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Skyblock] &fA new island has been created for you."));
+		Island existing = mManager.getIsland(player.getUniqueId());
+		// Go to the existing island
+		if (existing != null)
+		{
+			player.teleport(existing.getIslandOrigin());
+			player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Skyblock] &fYou have been teleported to your skyblock island"));
+		}
+		// Create a new island
+		else
+		{
+			SkyblockWorld world = mManager.getNextSkyblockWorld();
+			Island island = world.createIsland(player);
+			world.save();
+			
+			Location loc = island.getIslandOrigin();
+			// This is just temporary
+			loc.getBlock().getRelative(BlockFace.DOWN).setType(Material.STONE);
+			
+			player.teleport(loc);
+			
+			player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Skyblock] &fA new island has been created for you."));
+		}
 		return true;
 	}
 
