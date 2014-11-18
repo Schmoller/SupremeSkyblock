@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
@@ -18,6 +19,7 @@ import org.bukkit.entity.Player;
 
 import au.com.addstar.skyblock.island.Coord;
 import au.com.addstar.skyblock.island.Island;
+import au.com.addstar.skyblock.island.IslandTemplate;
 
 public class SkyblockWorld
 {
@@ -64,8 +66,19 @@ public class SkyblockWorld
 	{
 		Coord coords = mGrid.getNextEmpty();
 		Island island = new Island(player.getUniqueId(), coords, this);
+		
+		// Assign the space
 		mGrid.set(island);
 		mOwnerMap.put(player.getUniqueId(), island);
+
+		IslandTemplate template = mManager.getTemplate();
+		
+		// Configure the island
+		Location loc = island.getIslandOrigin();
+		island.setIslandSpawn(template.getSpawnLocation(loc));
+		
+		// Place it
+		template.placeAt(loc);
 		
 		return island;
 	}
@@ -73,6 +86,11 @@ public class SkyblockWorld
 	public Island getIsland(UUID owner)
 	{
 		return mOwnerMap.get(owner);
+	}
+	
+	public SkyblockManager getManager()
+	{
+		return mManager;
 	}
 	
 	public boolean load()
@@ -186,7 +204,10 @@ public class SkyblockWorld
 		// Record island occupancies
 		ConfigurationSection section = islandsConfig.createSection("islands");
 		for(Island island : islands)
+		{
 			section.set(String.format("%d_%d", island.getCoord().getX(), island.getCoord().getZ()), island.getOwner().toString());
+			island.saveIfNeeded();
+		}
 		
 		islandsConfig.save(islandsFile);
 	}

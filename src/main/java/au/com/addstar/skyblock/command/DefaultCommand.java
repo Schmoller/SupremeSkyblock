@@ -14,7 +14,6 @@ import au.com.addstar.monolith.command.ICommand;
 import au.com.addstar.skyblock.SkyblockManager;
 import au.com.addstar.skyblock.SkyblockWorld;
 import au.com.addstar.skyblock.island.Island;
-import au.com.addstar.skyblock.island.IslandTemplate;
 
 public class DefaultCommand implements ICommand
 {
@@ -84,11 +83,6 @@ public class DefaultCommand implements ICommand
 		{
 			SkyblockWorld world = mManager.getNextSkyblockWorld();
 			Island island = world.createIsland(player);
-			IslandTemplate template = mManager.getTemplate();
-			
-			Location loc = island.getIslandOrigin();
-			island.setIslandSpawn(template.getSpawnLocation(loc));
-			template.placeAt(loc);
 			player.teleport(island.getIslandSpawn());
 			
 			world.save();
