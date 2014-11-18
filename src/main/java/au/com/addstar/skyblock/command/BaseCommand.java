@@ -9,7 +9,11 @@ public class BaseCommand extends RootCommandDispatcher
 	{
 		super("Allows you to use skyblock");
 		
+		// User commands
 		setDefault(new DefaultCommand(manager));
 		registerCommand(new RestartCommand(manager));
+		
+		// Admin commands
+		registerCommand(new TemplateCommand(manager));
 	}
 }

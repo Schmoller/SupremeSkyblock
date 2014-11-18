@@ -1,6 +1,7 @@
 package au.com.addstar.skyblock;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
 import au.com.addstar.skyblock.island.Island;
+import au.com.addstar.skyblock.island.IslandTemplate;
 
 public class SkyblockManager
 {
@@ -17,6 +19,7 @@ public class SkyblockManager
 	private SkyblockPlugin mPlugin;
 	
 	private int mIslandChunkSize;
+	private IslandTemplate mTemplate;
 	
 	public SkyblockManager(SkyblockPlugin plugin)
 	{
@@ -67,6 +70,31 @@ public class SkyblockManager
 		mIslandChunkSize = island.getInt("size", 4);
 		if (mIslandChunkSize <= 0)
 			mIslandChunkSize = 4;
+		
+		String templateName = island.getString("template", "original");
+		
+		mTemplate = load(templateName);
+	}
+	
+	private IslandTemplate load(String name)
+	{
+		File file = new File(mPlugin.getDataFolder(), "templates/" + name + ".template");
+		IslandTemplate template = new IslandTemplate();
+		
+		// Try file system
+		if (file.exists() && template.load(file))
+			return template;
+		
+		// Try jar
+		InputStream stream = mPlugin.getResource("templates/" + name + ".template");
+		if (stream != null && template.load(stream))
+			return template;
+		
+		// Fallback
+		if (!name.equals("original"))
+			return load("original");
+		
+		throw new IllegalStateException("The default island template is missing! Unable to load");
 	}
 	
 	public SkyblockWorld getNextSkyblockWorld()
@@ -101,6 +129,11 @@ public class SkyblockManager
 	public int getIslandChunkSize()
 	{
 		return mIslandChunkSize;
+	}
+	
+	public IslandTemplate getTemplate()
+	{
+		return mTemplate;
 	}
 	
 	public File getWorldFolder(String world)

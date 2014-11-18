@@ -2,6 +2,9 @@
 island:
   # The size in chunks. Default is 4x4 chunks giving a 64x64 area from y level 0 to 255
   size: 4
+  
+  # The template to use for building islands. These are located in the templates folder or inside the jar. Default is 'original'
+  template: original
 
 # Below are the worlds that will be used as skyblock worlds
 # You can have as many as you like.
