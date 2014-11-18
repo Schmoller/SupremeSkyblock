@@ -30,7 +30,7 @@ public class SkyblockPlugin extends JavaPlugin
 	
 	private void onPostEnable()
 	{
-		mManager.loadWorlds(getConfig());
+		mManager.load(getConfig());
 	}
 	
 	@Override

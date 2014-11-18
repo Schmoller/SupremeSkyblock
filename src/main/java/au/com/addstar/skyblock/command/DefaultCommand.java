@@ -3,12 +3,19 @@ package au.com.addstar.skyblock.command;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import au.com.addstar.monolith.command.BadArgumentException;
 import au.com.addstar.monolith.command.CommandSenderType;
 import au.com.addstar.monolith.command.ICommand;
 import au.com.addstar.skyblock.SkyblockManager;
+import au.com.addstar.skyblock.SkyblockWorld;
+import au.com.addstar.skyblock.island.Island;
 
 public class DefaultCommand implements ICommand
 {
@@ -58,7 +65,20 @@ public class DefaultCommand implements ICommand
 	@Override
 	public boolean onCommand( CommandSender sender, String parent, String label, String[] args ) throws BadArgumentException
 	{
-		return false;
+		Player player = (Player)sender;
+		// TODO: Go to existing island
+		
+		SkyblockWorld world = mManager.getNextSkyblockWorld();
+		Island island = world.createIsland(player);
+		
+		Location loc = island.getIslandOrigin();
+		// This is just temporary
+		loc.getBlock().getRelative(BlockFace.DOWN).setType(Material.STONE);
+		
+		player.teleport(loc);
+		
+		player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Skyblock] &fA new island has been created for you."));
+		return true;
 	}
 
 	@Override

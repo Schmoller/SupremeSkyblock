@@ -13,13 +13,21 @@ public class SkyblockManager
 	private HashMap<World, SkyblockWorld> mWorlds;
 	private SkyblockPlugin mPlugin;
 	
+	private int mIslandChunkSize;
+	
 	public SkyblockManager(SkyblockPlugin plugin)
 	{
 		mPlugin = plugin;
 		mWorlds = new HashMap<World, SkyblockWorld>();
 	}
 	
-	public void loadWorlds(ConfigurationSection config)
+	public void load(ConfigurationSection config)
+	{
+		loadSettings(config);
+		loadWorlds(config);
+	}
+	
+	private void loadWorlds(ConfigurationSection config)
 	{
 		File worldDir = new File(mPlugin.getDataFolder(), "worlds");
 		
@@ -49,9 +57,35 @@ public class SkyblockManager
 		}
 	}
 	
+	private void loadSettings(ConfigurationSection config)
+	{
+		// Load other options
+		ConfigurationSection island = config.getConfigurationSection("island");
+		mIslandChunkSize = island.getInt("size", 4);
+		if (mIslandChunkSize <= 0)
+			mIslandChunkSize = 4;
+	}
+	
+	public SkyblockWorld getNextSkyblockWorld()
+	{
+		SkyblockWorld best = null;
+		for (SkyblockWorld world : mWorlds.values())
+		{
+			if (best == null || world.getGrid().getIslandCount() < best.getGrid().getIslandCount())
+				best = world;
+		}
+		
+		return best;
+	}
+	
 	public SkyblockWorld getSkyblockWorld(World world)
 	{
 		return mWorlds.get(world);
+	}
+	
+	public int getIslandChunkSize()
+	{
+		return mIslandChunkSize;
 	}
 	
 	public File getWorldFolder(String world)

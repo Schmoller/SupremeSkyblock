@@ -3,8 +3,6 @@ package au.com.addstar.skyblock;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.bukkit.entity.Player;
-
 import au.com.addstar.skyblock.island.Coord;
 import au.com.addstar.skyblock.island.Island;
 
@@ -16,11 +14,14 @@ public class IslandGrid
 	private int mMaxX;
 	private int mMaxZ;
 	
+	private int mIslandCount;
+	
 	public IslandGrid()
 	{
 		mPlacements = new Island[1][1];
 		mMinX = mMaxX = 0;
 		mMinZ = mMaxZ = 0;
+		mIslandCount = 0;
 	}
 	
 	public Island get(Coord coord)
@@ -52,6 +53,9 @@ public class IslandGrid
 		x -= mMinX;
 		z -= mMinZ;
 		
+		if (mPlacements[x][z] == null)
+			++mIslandCount;
+		
 		mPlacements[x][z] = island;
 	}
 	
@@ -71,9 +75,55 @@ public class IslandGrid
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
 	
-	public Island createNew(Player player)
+	public Coord getNextEmpty()
 	{
-		throw new UnsupportedOperationException("Not yet implemented");
+		// Spiral out in a clockwise direction looking for an empty slot
+		int x = 0;
+		int z = 0;
+		
+		int dir = 0;
+		
+		Island island = get(x, z);
+		
+		int initial = 0;
+		
+		while(island != null)
+		{
+			switch(dir)
+			{
+			case 0: // Next
+				++x;
+				++z;
+				initial = x;
+				
+				++dir;
+				break;
+			case 1: // Right down
+				--z;
+				if (z <= -initial)
+					++dir;
+				break;
+			case 2: // Bottom left
+				--x;
+				if (x <= -initial)
+					++dir;
+				break;
+			case 3: // Left up
+				++z;
+				if (z >= initial)
+					++dir;
+				break;
+			case 4: // Top right
+				++x;
+				if (x >= initial)
+					dir = 0;
+				break;
+			}
+			
+			island = get(x,z);
+		}
+		
+		return new Coord(x,z);
 	}
 	
 	public List<Island> getIslands()
@@ -90,6 +140,11 @@ public class IslandGrid
 		}
 		
 		return islands;
+	}
+	
+	public int getIslandCount()
+	{
+		return mIslandCount;
 	}
 	
 	public Coord getMinExtent()
@@ -133,8 +188,8 @@ public class IslandGrid
 	
 	private void resize(int minX, int maxX, int minZ, int maxZ)
 	{
-		int width = maxX - minX;
-		int height = maxZ - minZ;
+		int width = maxX - minX + 1;
+		int height = maxZ - minZ + 1;
 		
 		Island[][] newPlacements = new Island[width][];
 		
@@ -150,7 +205,7 @@ public class IslandGrid
 				for (int z = 0; z < height; ++z)
 				{
 					int zOffset = (minZ - mMinZ) + z;
-					if (xOffset >= 0 && xOffset < mPlacements.length)
+					if (zOffset >= 0 && zOffset < mPlacements[xOffset].length)
 						newPlacements[x][z] = oldCol[zOffset];
 				}
 			}
