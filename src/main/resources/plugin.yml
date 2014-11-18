@@ -19,6 +19,12 @@ permissions:
     default: true
   skyblock.commands.restart:
     default: true
+  skyblock.commands.info:
+    default: true
 # Admin commands
   skyblock.commands.template:
     default: op
+  skyblock.commands.info.others:
+    default: op
+    children:
+      skyblock.commands.info: true

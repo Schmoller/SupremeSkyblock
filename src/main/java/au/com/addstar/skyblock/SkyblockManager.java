@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -124,6 +125,15 @@ public class SkyblockManager
 		}
 		
 		return null;
+	}
+	
+	public Island getIslandAt(Location location)
+	{
+		SkyblockWorld world = mWorlds.get(location.getWorld());
+		if (world == null)
+			return null;
+		
+		return world.getIslandAt(location);
 	}
 	
 	public int getIslandChunkSize()

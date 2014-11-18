@@ -15,6 +15,8 @@ import au.com.addstar.skyblock.SkyblockWorld;
 public class Island
 {
 	private UUID mOwner;
+	private String mOwnerName;
+	
 	private final Coord mCoord;
 	private final SkyblockWorld mWorld;
 	private final Location mIslandOrigin;
@@ -38,6 +40,19 @@ public class Island
 	public UUID getOwner()
 	{
 		return mOwner;
+	}
+	
+	public String getOwnerName()
+	{
+		loadIfNeeded();
+		
+		return mOwnerName;
+	}
+	
+	public void setOwnerName(String name)
+	{
+		mOwnerName = name;
+		mIsModified = true;
 	}
 	
 	public Coord getCoord()
@@ -117,6 +132,9 @@ public class Island
 			spawn.set("yaw", mIslandSpawn.getYaw());
 			spawn.set("pitch", mIslandSpawn.getPitch());
 		}
+		
+		if (mOwnerName != null)
+			dest.set("owner-name", mOwnerName);
 	}
 	
 	public void loadIfNeeded()
@@ -162,5 +180,8 @@ public class Island
 			ConfigurationSection spawn = source.getConfigurationSection("spawn");
 			mIslandSpawn = new Location(mWorld.getWorld(), spawn.getDouble("x"), spawn.getDouble("y"), spawn.getDouble("z"), (float)spawn.getDouble("yaw"), (float)spawn.getDouble("pitch"));
 		}
+		
+		if (source.contains("owner-name"))
+			mOwnerName = source.getString("owner-name");
 	}
 }

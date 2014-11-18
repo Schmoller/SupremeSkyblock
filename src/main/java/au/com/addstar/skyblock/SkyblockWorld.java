@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import net.minecraft.util.org.apache.commons.lang3.Validate;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -76,6 +78,7 @@ public class SkyblockWorld
 		// Configure the island
 		Location loc = island.getIslandOrigin();
 		island.setIslandSpawn(template.getSpawnLocation(loc));
+		island.setOwnerName(player.getDisplayName());
 		
 		// Place it
 		template.placeAt(loc);
@@ -86,6 +89,21 @@ public class SkyblockWorld
 	public Island getIsland(UUID owner)
 	{
 		return mOwnerMap.get(owner);
+	}
+	
+	public Island getIslandAt(Location location)
+	{
+		Validate.isTrue(location.getWorld().equals(mWorld));
+		
+		// Chunk coords
+		int x = location.getBlockX() >> 4;
+		int z = location.getBlockZ() >> 4;
+		
+		// island coords
+		x /= mIslandChunkSize;
+		z /= mIslandChunkSize;
+		
+		return mGrid.get(x, z);
 	}
 	
 	public SkyblockManager getManager()
