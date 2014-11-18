@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -16,6 +14,7 @@ import au.com.addstar.monolith.command.ICommand;
 import au.com.addstar.skyblock.SkyblockManager;
 import au.com.addstar.skyblock.SkyblockWorld;
 import au.com.addstar.skyblock.island.Island;
+import au.com.addstar.skyblock.island.IslandTemplate;
 
 public class DefaultCommand implements ICommand
 {
@@ -71,7 +70,13 @@ public class DefaultCommand implements ICommand
 		// Go to the existing island
 		if (existing != null)
 		{
-			player.teleport(existing.getIslandOrigin());
+			Location spawn = existing.getIslandSpawn();
+			
+			// In the future this should not be needed, but this is not saved yet
+			if (spawn == null)
+				spawn = mManager.getTemplate().getSpawnLocation(existing.getIslandOrigin());
+			
+			player.teleport(spawn);
 			player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Skyblock] &fYou have been teleported to your skyblock island"));
 		}
 		// Create a new island
@@ -79,14 +84,14 @@ public class DefaultCommand implements ICommand
 		{
 			SkyblockWorld world = mManager.getNextSkyblockWorld();
 			Island island = world.createIsland(player);
-			world.save();
+			IslandTemplate template = mManager.getTemplate();
 			
 			Location loc = island.getIslandOrigin();
-			// This is just temporary
-			loc.getBlock().getRelative(BlockFace.DOWN).setType(Material.STONE);
+			island.setIslandSpawn(template.getSpawnLocation(loc));
+			template.placeAt(loc);
+			player.teleport(island.getIslandSpawn());
 			
-			player.teleport(loc);
-			
+			world.save();
 			player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Skyblock] &fA new island has been created for you."));
 		}
 		return true;

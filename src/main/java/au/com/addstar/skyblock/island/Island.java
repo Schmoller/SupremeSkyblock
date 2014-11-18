@@ -2,6 +2,7 @@ package au.com.addstar.skyblock.island;
 
 import java.util.UUID;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 
 import au.com.addstar.skyblock.SkyblockWorld;
@@ -12,6 +13,7 @@ public class Island
 	private final Coord mCoord;
 	private final SkyblockWorld mWorld;
 	private final Location mIslandOrigin;
+	private Location mIslandSpawn;
 	
 	public Island(UUID owner, Coord coords, SkyblockWorld world)
 	{
@@ -49,4 +51,16 @@ public class Island
 	{
 		return mIslandOrigin.clone();
 	}
+	
+	public Location getIslandSpawn()
+	{
+		return mIslandSpawn.clone();
+	}
+	
+	public void setIslandSpawn(Location spawn)
+	{
+		Validate.isTrue(spawn.getWorld().equals(mIslandOrigin.getWorld()));
+		mIslandSpawn = spawn;
+	}
+	
 }

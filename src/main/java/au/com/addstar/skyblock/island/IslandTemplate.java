@@ -36,6 +36,35 @@ public class IslandTemplate
 	
 	private Location mSpawn;
 	
+	public void placeAt(Location origin)
+	{
+		int offsetX = -mWidth / 2;
+		int offsetY = -mHeight / 2;
+		int offsetZ = -mDepth / 2;
+		
+		for (int x = 0; x < mWidth; ++x)
+		{
+			for (int y = 0; y < mHeight; ++y)
+			{
+				for (int z = 0; z < mDepth; ++z)
+				{
+					Block block = origin.getWorld().getBlockAt(origin.getBlockX() + offsetX + x, origin.getBlockY() + offsetY + y, origin.getBlockZ() + offsetZ + z);
+					StoredBlock sblock = mBlocks[x + y * mWidth + z * (mWidth * mHeight)];
+					sblock.apply(block);
+				}
+			}
+		}
+	}
+	
+	public Location getSpawnLocation(Location origin)
+	{
+		int offsetX = -mWidth / 2;
+		int offsetY = -mHeight / 2;
+		int offsetZ = -mDepth / 2;
+		
+		return new Location(origin.getWorld(), origin.getBlockX() + offsetX + mSpawn.getX(), origin.getBlockY() + offsetY + mSpawn.getY(), origin.getBlockZ() + offsetZ + mSpawn.getZ(), mSpawn.getYaw(), mSpawn.getPitch());
+	}
+	
 	private boolean checkType( DataInputStream in ) throws IOException
 	{
 		for (int i = 0; i < fileHeader.length(); ++i)
