@@ -14,6 +14,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 
 import au.com.addstar.skyblock.SkyblockWorld;
+import au.com.addstar.skyblock.challenge.ChallengeStorage;
 
 public class Island
 {
@@ -24,6 +25,7 @@ public class Island
 	private final SkyblockWorld mWorld;
 	private final Location mIslandOrigin;
 	private Location mIslandSpawn;
+	private ChallengeStorage mChallenges;
 	
 	private boolean mHasLoaded = false;
 	private boolean mIsModified = false;
@@ -38,6 +40,8 @@ public class Island
 		int halfSize = (mWorld.getIslandChunkSize() * 16) / 2;
 		
 		mIslandOrigin = new Location(mWorld.getWorld(), chunkMin.getX() * 16 + halfSize, 190, chunkMin.getZ() * 16 + halfSize);
+		
+		mChallenges = new ChallengeStorage(this);
 	}
 	
 	public UUID getOwner()
@@ -120,9 +124,14 @@ public class Island
 		mIsModified = true;
 	}
 	
+	public ChallengeStorage getChallengeStorage()
+	{
+		return mChallenges;
+	}
+	
 	public void saveIfNeeded()
 	{
-		if (mIsModified)
+		if (mIsModified || mChallenges.needsSaving())
 			save();
 	}
 	
@@ -165,6 +174,8 @@ public class Island
 		
 		if (mOwnerName != null)
 			dest.set("owner-name", mOwnerName);
+		
+		mChallenges.save(dest);
 	}
 	
 	public void loadIfNeeded()
@@ -213,5 +224,7 @@ public class Island
 		
 		if (source.contains("owner-name"))
 			mOwnerName = source.getString("owner-name");
+		
+		mChallenges.load(source);
 	}
 }

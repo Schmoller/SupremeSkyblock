@@ -3,6 +3,7 @@ package au.com.addstar.skyblock.misc;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 
 public class Utilities
@@ -22,5 +23,10 @@ public class Utilities
 				return null;
 			return result;
 		}
+	}
+	
+	public static String format(String format, Object... args)
+	{
+		return ChatColor.translateAlternateColorCodes('&', String.format(format, args));
 	}
 }
