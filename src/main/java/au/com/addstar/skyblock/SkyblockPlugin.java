@@ -23,6 +23,7 @@ public class SkyblockPlugin extends JavaPlugin
 			@Override
 			public void run()
 			{
+				Bukkit.getPluginManager().registerEvents(new ProtectionListener(mManager), SkyblockPlugin.this);
 				onPostEnable();
 			}
 		});

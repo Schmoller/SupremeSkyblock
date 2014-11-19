@@ -12,6 +12,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 
 import au.com.addstar.skyblock.SkyblockWorld;
 import au.com.addstar.skyblock.challenge.ChallengeStorage;
@@ -87,6 +88,11 @@ public class Island
 	public void placeIsland()
 	{
 		mWorld.getManager().getTemplate().placeAt(mIslandOrigin);
+	}
+	
+	public boolean canAssist(Player player)
+	{
+		return player.getUniqueId().equals(mOwner);
 	}
 	
 	public Coord getCoord()

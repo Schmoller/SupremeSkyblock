@@ -34,3 +34,6 @@ permissions:
     default: op
     children:
       skyblock.commands.restart: true
+# Other permissions
+  skyblock.protection.bypass:
+    default: op
