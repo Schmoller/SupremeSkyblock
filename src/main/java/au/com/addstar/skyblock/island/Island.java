@@ -83,6 +83,8 @@ public class Island
 				// FIXME: Empty chunks are not being sent correctly to the client. They appear as missing chunks causing several client issues
 			}
 		}
+		
+		mChallenges = new ChallengeStorage(this);
 	}
 	
 	public void placeIsland()
@@ -132,6 +134,7 @@ public class Island
 	
 	public ChallengeStorage getChallengeStorage()
 	{
+		loadIfNeeded();
 		return mChallenges;
 	}
 	
