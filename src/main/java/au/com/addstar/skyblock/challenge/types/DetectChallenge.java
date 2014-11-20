@@ -3,6 +3,7 @@ package au.com.addstar.skyblock.challenge.types;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -54,6 +55,21 @@ public class DetectChallenge extends Challenge
 		
 		for (ItemStack item : mItems)
 			builder.add(Utilities.format("&7 - &e%d&7x &e%s", item.getAmount(), StringTranslator.getName(item)));
+	}
+	
+	@Override
+	public void load( ConfigurationSection section )
+	{
+		super.load(section);
+		
+		if (section.isList("items"))
+		{
+			List<String> defs = section.getStringList("items");
+			mItems = new ArrayList<ItemStack>(defs.size());
+			
+			for(String def : defs)
+				mItems.add(Utilities.parseItem(def.split(" ")));
+		}
 	}
 
 	@Override

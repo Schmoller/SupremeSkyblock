@@ -110,8 +110,11 @@ public class ChallengeCommand implements ICommand
 					throw new IllegalArgumentException("You do not have an island. You need to create one first before you can see challenges.");
 				
 				Challenge challenge = mManager.getChallenges().getChallenge(args[0]);
-				if (challenge == null || !island.getChallengeStorage().allComplete(challenge.getDependencies()))
+				if (challenge == null)
 					throw new BadArgumentException(0, "Unknown challenge, use " + parent + label + " to see available challenges");
+				
+				if (!island.getChallengeStorage().allComplete(challenge.getDependencies()))
+					throw new IllegalStateException("You have not completed the required challenges");
 				
 				sender.sendMessage(Utilities.format("&6[Skyblock] &f%s challenge:", challenge.getName()));
 				

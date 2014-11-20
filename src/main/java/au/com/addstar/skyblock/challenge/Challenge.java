@@ -3,8 +3,11 @@ package au.com.addstar.skyblock.challenge;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+
 import com.google.common.collect.ImmutableList;
 
 import au.com.addstar.skyblock.challenge.rewards.Reward;
@@ -120,6 +123,34 @@ public abstract class Challenge
 			addRewardDescription(builder, completed);
 		else
 			builder.add(Utilities.format(" &aYou have completed this challenge"));
+	}
+	
+	public void load(ConfigurationSection section)
+	{
+		if (section.isList("description"))
+			mDescription = section.getStringList("description");
+		
+		mShowRequirements = section.getBoolean("show-reqs", true);
+		
+		mCanRepeat = section.getBoolean("repeat", false);
+		mCooldown = TimeUnit.MILLISECONDS.convert(section.getLong("cooldown", 2), TimeUnit.MINUTES);
+		
+		if (section.isList("reward"))
+			mPrimaryRewards = loadRewards(section.getStringList("reward"));
+		
+		if (section.isList("secondary-reward"))
+			mSecondaryRewards = loadRewards(section.getStringList("secondary-reward"));
+		else
+			mSecondaryRewards = new ArrayList<Reward>(mPrimaryRewards);
+	}
+	
+	private List<Reward> loadRewards(List<String> list)
+	{
+		ArrayList<Reward> rewards = new ArrayList<Reward>(list.size());
+		for(String def : list)
+			rewards.add(Reward.load(def));
+		
+		return rewards;
 	}
 	
 	public boolean isRepeatable()

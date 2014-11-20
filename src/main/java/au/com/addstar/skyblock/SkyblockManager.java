@@ -2,21 +2,15 @@ package au.com.addstar.skyblock;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
-
 import au.com.addstar.skyblock.challenge.ChallengeManager;
-import au.com.addstar.skyblock.challenge.rewards.ItemReward;
-import au.com.addstar.skyblock.challenge.types.SubmitChallenge;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.island.IslandTemplate;
 
@@ -33,20 +27,15 @@ public class SkyblockManager
 	{
 		mPlugin = plugin;
 		mWorlds = new HashMap<World, SkyblockWorld>();
-		mChallenges = new ChallengeManager();
-		
-		// TODO: Remove this, it is just a test
-		SubmitChallenge challenge = new SubmitChallenge("dirt2diamonds");
-		challenge.getPrimaryRewards().add(new ItemReward(new ItemStack(Material.DIAMOND, 1)));
-		challenge.getRequiredItems().add(new ItemStack(Material.DIRT, 10));
-		challenge.setDescription(Arrays.asList("You discovered some magical force", "that allows you to transmute", "dirt into diamonds!"));
-		mChallenges.addChallenge(challenge);
+		mChallenges = new ChallengeManager(this);
 	}
 	
 	public void load(ConfigurationSection config)
 	{
 		loadSettings(config);
 		loadWorlds(config);
+		
+		mChallenges.loadChallenges(new File(mPlugin.getDataFolder(), "challenges.yml"));
 	}
 	
 	private void loadWorlds(ConfigurationSection config)
