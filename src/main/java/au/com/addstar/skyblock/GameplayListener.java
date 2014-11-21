@@ -4,6 +4,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import au.com.addstar.skyblock.island.Island;
@@ -34,5 +36,29 @@ public class GameplayListener implements Listener
 		}
 		
 		event.setRespawnLocation(island.getIslandSpawn());
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onBlockPlace(BlockPlaceEvent event)
+	{
+		Player player = event.getPlayer();
+		if (mManager.getSkyblockWorld(player.getWorld()) == null)
+			return;
+		
+		Island island = mManager.getIslandAt(event.getBlock().getLocation());
+		if (island != null)
+			island.markScoreDirty();
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onBlockRemove(BlockBreakEvent event)
+	{
+		Player player = event.getPlayer();
+		if (mManager.getSkyblockWorld(player.getWorld()) == null)
+			return;
+		
+		Island island = mManager.getIslandAt(event.getBlock().getLocation());
+		if (island != null)
+			island.markScoreDirty();
 	}
 }

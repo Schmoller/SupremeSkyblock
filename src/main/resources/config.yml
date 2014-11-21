@@ -1,8 +1,17 @@
+general:
+  # The time between saves in ticks
+  save-interval: 6000
+  # The time in ticks between updating scores. The only islands that will be recalculated are 
+  # islands that have been modified by a player placing or removing a block on the island
+  # since the last time the score was updated
+  score-sweep-delay: 2400
+  # The maximum time in milliseconds that can be spent each tick calculating the score of an island
+  score-calc-time-limit: 10
+
 # Settings for islands
 island:
   # The size in chunks. Default is 4x4 chunks giving a 64x64 area from y level 0 to 255
   size: 4
-  
   # The template to use for building islands. These are located in the templates folder or inside the jar. Default is 'original'
   template: original
 

@@ -23,6 +23,8 @@ permissions:
     default: true
   skyblock.command.challenge:
     default: true
+  skyblock.command.rank:
+    default: true
 # Admin commands
   skyblock.commands.template:
     default: op

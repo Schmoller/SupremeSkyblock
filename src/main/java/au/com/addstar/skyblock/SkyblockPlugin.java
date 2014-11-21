@@ -33,6 +33,14 @@ public class SkyblockPlugin extends JavaPlugin
 		mManager.load(getConfig());
 		Bukkit.getPluginManager().registerEvents(new ProtectionListener(mManager), this);
 		Bukkit.getPluginManager().registerEvents(new GameplayListener(mManager), this);
+		
+		mManager.init();
+	}
+	
+	@Override
+	public void onDisable()
+	{
+		mManager.save();
 	}
 	
 	@Override

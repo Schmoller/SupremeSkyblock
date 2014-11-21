@@ -101,6 +101,12 @@ public class InfoCommand implements ICommand
 		sender.sendMessage(ChatColor.GOLD + "[Skyblock]" + ChatColor.WHITE + " Island info:");
 		sender.sendMessage(ChatColor.GRAY + " Owner:" + ChatColor.WHITE + " " + island.getOwnerName());
 		sender.sendMessage(ChatColor.GRAY + " Location:" + ChatColor.WHITE + String.format(" %d,%d,%d %s", island.getIslandOrigin().getBlockX(), island.getIslandOrigin().getBlockY(), island.getIslandOrigin().getBlockZ(), island.getIslandOrigin().getWorld().getName()));
+		int rank = island.getRank();
+		if (rank < 0)
+			sender.sendMessage(ChatColor.GRAY + " Rank:" + ChatColor.WHITE + " Unranked");
+		else
+			sender.sendMessage(ChatColor.GRAY + " Rank:" + ChatColor.WHITE + " " + island.getRank());
+		sender.sendMessage(ChatColor.GRAY + " Score:" + ChatColor.WHITE + " " + island.getScore());
 		
 		return true;
 	}
@@ -110,5 +116,4 @@ public class InfoCommand implements ICommand
 	{
 		return null;
 	}
-
 }

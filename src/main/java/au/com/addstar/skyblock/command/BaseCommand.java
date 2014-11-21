@@ -14,6 +14,7 @@ public class BaseCommand extends RootCommandDispatcher
 		registerCommand(new RestartCommand(manager));
 		registerCommand(new InfoCommand(manager));
 		registerCommand(new ChallengeCommand(manager));
+		registerCommand(new RankCommand(manager));
 		registerCommand(new ConfirmCommand());
 		registerCommand(new CancelCommand());
 		

@@ -22,6 +22,7 @@ public abstract class Challenge
 	
 	private List<Reward> mPrimaryRewards;
 	private List<Reward> mSecondaryRewards;
+	private int mPoints;
 	
 	private boolean mCanRepeat;
 	private long mCooldown;
@@ -142,6 +143,8 @@ public abstract class Challenge
 			mSecondaryRewards = loadRewards(section.getStringList("secondary-reward"));
 		else
 			mSecondaryRewards = new ArrayList<Reward>(mPrimaryRewards);
+		
+		mPoints = section.getInt("points", 0);
 	}
 	
 	private List<Reward> loadRewards(List<String> list)
@@ -211,5 +214,15 @@ public abstract class Challenge
 	public List<Reward> getSecondaryRewards()
 	{
 		return mSecondaryRewards;
+	}
+	
+	public int getPointReward()
+	{
+		return mPoints;
+	}
+	
+	public void setPointReward(int points)
+	{
+		mPoints = points;
 	}
 }

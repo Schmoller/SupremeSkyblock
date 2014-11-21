@@ -27,9 +27,11 @@ public class Island
 	private final Location mIslandOrigin;
 	private Location mIslandSpawn;
 	private ChallengeStorage mChallenges;
+	private int mScore;
 	
 	private boolean mHasLoaded = false;
 	private boolean mIsModified = false;
+	private boolean mScoreDirty = false;
 	
 	public Island(UUID owner, Coord coords, SkyblockWorld world)
 	{
@@ -132,6 +134,39 @@ public class Island
 		mIsModified = true;
 	}
 	
+	public int getRank()
+	{
+		return mWorld.getManager().getRank(this);
+	}
+	
+	public int getScore()
+	{
+		return mScore;
+	}
+	
+	public void setScore(int score)
+	{
+		mScore = score;
+		
+		mWorld.getManager().updateRank(this);
+		mScoreDirty = false;
+		mIsModified = true;
+	}
+	
+	public boolean isScoreDirty()
+	{
+		return mScoreDirty;
+	}
+	
+	public void markScoreDirty()
+	{
+		if (!mScoreDirty)
+		{
+			mScoreDirty = true;
+			mWorld.getManager().queueScoreUpdate(this);
+		}
+	}
+	
 	public ChallengeStorage getChallengeStorage()
 	{
 		loadIfNeeded();
@@ -184,6 +219,8 @@ public class Island
 		if (mOwnerName != null)
 			dest.set("owner-name", mOwnerName);
 		
+		dest.set("score", mScore);
+		
 		mChallenges.save(dest);
 	}
 	
@@ -221,6 +258,7 @@ public class Island
 		
 		mHasLoaded = true;
 		mIsModified = false;
+		mScoreDirty = false;
 	}
 	
 	private void load(ConfigurationSection source)
@@ -233,6 +271,8 @@ public class Island
 		
 		if (source.contains("owner-name"))
 			mOwnerName = source.getString("owner-name");
+		
+		mScore = source.getInt("score", 0);
 		
 		mChallenges.load(source);
 	}

@@ -1,0 +1,104 @@
+ranks:
+  points-per-level: 100
+
+# The point value of each type of block
+block-value:
+  default: 1
+  # 0 point blocks
+  bedrock: 0
+  flowing_water: 0
+  water: 0
+  flowing_lava: 0
+  lava: 0
+  leaves: 0
+  piston_head: 0
+  piston_extension: 0
+  fire: 0
+  wheat: 0
+  standing_sign: 0
+  ladder: 0
+  wall_sign: 0
+  stone_pressure_plate: 0
+  wooden_pressure_plate: 0
+  cactus: 0
+  reeds: 0
+  melon_block: 0
+  pumpkin_stem: 0
+  melon_stem: 0
+  vine: 0
+  
+  # 2 point blocks
+  grass: 2
+  dirt: 2
+  sand: 2
+  gravel: 2
+  sandstone: 2
+  noteblock: 2
+  bed: 2
+  golden_rail: 2
+  detector_rail: 2
+  sticky_piston: 2
+  web: 2
+  piston: 2
+  wool: 2
+  double_stone_slab: 2
+  obsidian: 2
+  lit_pumpkin: 2
+  stonebrick: 2
+  glass_pane: 2
+  brick_stairs: 2
+  stone_brick_stairs: 2
+  mycelium: 2
+  nether_brick: 2
+  nether_brick_stairs: 2
+  redstone_lamp: 2
+  lit_redstone_lamp: 2
+  
+  # 3 point blocks
+  glass: 3
+  bookshelf: 3
+  mossy_cobblestone: 3
+  farmland: 3
+  clay: 3
+  
+  # 4 point blocks
+  brick_block: 4
+  
+  # 5 point blocks
+  lapis_block: 5
+  tnt: 5
+  ice: 5
+  snow: 5
+  cake: 5
+  skull: 5
+  
+  # ore blocks
+  coal_ore: 3
+  quartz_ore: 4
+  iron_ore: 4
+  redstone_ore: 5
+  lit_redstone_ore: 5
+  lapis_ore: 5
+  gold_ore: 20
+  emerald_ore: 40
+  diamond_ore: 40
+  
+  # Misc point blocks
+  quartz_stairs: 10
+  redstone_block: 15
+  quartz_block: 15
+  enchanting_table: 20
+  iron_block: 36
+  portal: 100
+  anvil: 120
+  gold_block: 180
+  diamond_block: 360
+  emerald_block: 360
+  beacon: 500
+  dragon_egg: 1000
+
+# The maximum number of a block that is to be counted toward the score
+block-limits:
+  default: 10000
+  portal: 1
+  redstone_wire: 1000
