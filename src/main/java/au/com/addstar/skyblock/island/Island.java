@@ -63,6 +63,8 @@ public class Island
 			mMembers.put(id, null);
 		
 		mChallenges = new ChallengeStorage(this);
+		
+		mIslandStartTime = mLastUseTime = System.currentTimeMillis();
 	}
 	
 	public UUID getOwner()
