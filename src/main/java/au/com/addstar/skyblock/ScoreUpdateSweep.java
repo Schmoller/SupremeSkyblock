@@ -1,6 +1,7 @@
 package au.com.addstar.skyblock;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -9,12 +10,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.island.IslandScoreUpdater;
+import au.com.addstar.skyblock.misc.Utilities;
 
 public class ScoreUpdateSweep
 {
 	private Plugin mPlugin;
 	private LinkedBlockingQueue<Island> mWaitingIslands;
-	private int mDelayTime;
+	private long mDelayTime;
 	private int mProcessTimeLimit;
 	
 	private IslandScoreUpdater mUpdater;
@@ -30,9 +32,8 @@ public class ScoreUpdateSweep
 		if (config.isConfigurationSection("general"))
 		{
 			ConfigurationSection section = config.getConfigurationSection("general");
-			mDelayTime = section.getInt("score-sweep-delay", 2400);
-			if (mDelayTime <= 0)
-				mDelayTime = 2400;
+			mDelayTime = Utilities.parseTimeDiffSafe(section.getString("score-sweep-delay", "2m"), TimeUnit.MINUTES.toMillis(2), mPlugin.getLogger());
+			mDelayTime /= 50;
 			
 			mProcessTimeLimit = section.getInt("score-calc-time-limit", 10);
 			if (mProcessTimeLimit <= 0)

@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,6 +27,7 @@ import com.google.common.io.Closeables;
 import au.com.addstar.skyblock.challenge.ChallengeManager;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.island.IslandTemplate;
+import au.com.addstar.skyblock.misc.Utilities;
 
 public class SkyblockManager
 {
@@ -41,6 +43,7 @@ public class SkyblockManager
 	
 	private int mIslandChunkSize;
 	private IslandTemplate mTemplate;
+	private long mIslandRestartCooldown;
 	
 	public SkyblockManager(SkyblockPlugin plugin)
 	{
@@ -116,11 +119,12 @@ public class SkyblockManager
 		
 		String templateName = island.getString("template", "original");
 		
+		mIslandRestartCooldown = Utilities.parseTimeDiffSafe(island.getString("restart-cooldown", "1d"), TimeUnit.DAYS.toMillis(1), mPlugin.getLogger());
+		
 		mTemplate = load(templateName);
 		
-		int saveInterval = config.getInt("general.save-interval", 6000);
-		if (saveInterval <= 0)
-			saveInterval = 6000;
+		long saveInterval = Utilities.parseTimeDiffSafe(config.getString("general.save-interval", "5m"), TimeUnit.MINUTES.toMillis(5), mPlugin.getLogger());
+		saveInterval /= 50;
 		
 		if (mSaver != null)
 			mSaver.cancel();
@@ -301,6 +305,11 @@ public class SkyblockManager
 	public int getIslandChunkSize()
 	{
 		return mIslandChunkSize;
+	}
+	
+	public long getIslandRestartCooldown()
+	{
+		return mIslandRestartCooldown;
 	}
 	
 	public IslandTemplate getTemplate()

@@ -1,6 +1,10 @@
 package au.com.addstar.skyblock.misc;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -122,6 +126,60 @@ public class Utilities
 			ItemStack item = def.asItemStack(1);
 			item.setAmount(item.getMaxStackSize());
 			return item;
+		}
+	}
+	
+	private static Pattern mDiffPattern;
+	private static TimeUnit[] mUnits = new TimeUnit[] {TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS};
+	private static String[] mUnitNames = new String[] {"d", "h", "m", "s"};
+	
+	public static long parseTimeDiff(String diffString)
+	{
+		// Prepare the parsing expression
+		if (mDiffPattern == null)
+		{
+			StringBuilder builder = new StringBuilder();
+			for (String unit : mUnitNames)
+			{
+				builder.append("(?:([0-9]+)[");
+				builder.append(unit);
+				builder.append(unit.toUpperCase());
+				builder.append("])*");
+			}
+			
+			mDiffPattern = Pattern.compile(builder.toString());
+		}
+		
+		long time = 0;
+		
+		diffString = diffString.replace(" ", "");
+		Matcher match = mDiffPattern.matcher(diffString);
+		
+		if (!match.matches())
+			throw new IllegalArgumentException("Unknown date diff format");
+		
+		for (int i = 0; i < mUnits.length; ++i)
+		{
+			if (match.group(i+1) != null)
+			{
+				TimeUnit unit = mUnits[i];
+				time += unit.toMillis(Integer.parseInt(match.group(i+1)));
+			}
+		}
+		
+		return time;
+	}
+	
+	public static long parseTimeDiffSafe(String diffString, long def, Logger logger)
+	{
+		try
+		{
+			return parseTimeDiff(diffString);
+		}
+		catch(IllegalArgumentException e)
+		{
+			logger.severe("Failed to parse date diff '" + diffString + "'. Reason: " + e.getMessage());
+			return def;
 		}
 	}
 }

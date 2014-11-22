@@ -1,10 +1,10 @@
 general:
-  # The time between saves in ticks
-  save-interval: 6000
-  # The time in ticks between updating scores. The only islands that will be recalculated are 
+  # The time between saves
+  save-interval: 5m
+  # The time between updating scores. The only islands that will be recalculated are 
   # islands that have been modified by a player placing or removing a block on the island
   # since the last time the score was updated
-  score-sweep-delay: 2400
+  score-sweep-delay: 2m
   # The maximum time in milliseconds that can be spent each tick calculating the score of an island
   score-calc-time-limit: 10
 
@@ -14,6 +14,8 @@ island:
   size: 4
   # The template to use for building islands. These are located in the templates folder or inside the jar. Default is 'original'
   template: original
+  # The minimum time between restarts 
+  restart-cooldown: 1d
 
 # Below are the worlds that will be used as skyblock worlds
 # You can have as many as you like.

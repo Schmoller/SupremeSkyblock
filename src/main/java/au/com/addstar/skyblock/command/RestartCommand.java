@@ -3,6 +3,7 @@ package au.com.addstar.skyblock.command;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -98,6 +99,17 @@ public class RestartCommand implements ICommand
 				throw new IllegalArgumentException("You do not have an island");
 			
 			otherIsland = false;
+		}
+		
+		// Check for cooldown
+		if (System.currentTimeMillis() - island.getStartTime() < mManager.getIslandRestartCooldown())
+		{
+			if (!sender.hasPermission("skyblock.cooldown.bypass"))
+			{
+				String diff = DurationFormatUtils.formatDurationWords(island.getStartTime() + mManager.getIslandRestartCooldown() - System.currentTimeMillis(), true, false);
+				sender.sendMessage(Utilities.format("&6[Skyblock] &cYou need to wait %s before this island can be restarted", diff));
+				return true;
+			}
 		}
 		
 		final Island fIsland = island;

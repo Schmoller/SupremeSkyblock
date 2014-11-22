@@ -39,3 +39,5 @@ permissions:
 # Other permissions
   skyblock.protection.bypass:
     default: op
+  skyblock.cooldown.bypass:
+    default: op

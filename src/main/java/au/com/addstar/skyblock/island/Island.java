@@ -29,6 +29,9 @@ public class Island
 	private ChallengeStorage mChallenges;
 	private int mScore;
 	
+	private long mIslandStartTime;
+	private long mLastUseTime;
+	
 	private boolean mHasLoaded = false;
 	private boolean mIsModified = false;
 	private boolean mScoreDirty = false;
@@ -141,6 +144,7 @@ public class Island
 	
 	public int getScore()
 	{
+		loadIfNeeded();
 		return mScore;
 	}
 	
@@ -165,6 +169,24 @@ public class Island
 			mScoreDirty = true;
 			mWorld.getManager().queueScoreUpdate(this);
 		}
+	}
+	
+	public long getStartTime()
+	{
+		loadIfNeeded();
+		return mIslandStartTime;
+	}
+	
+	public long getLastUseTime()
+	{
+		loadIfNeeded();
+		return mLastUseTime;
+	}
+	
+	public void setLastUseTime(long time)
+	{
+		mLastUseTime = time;
+		mIsModified = true;
 	}
 	
 	public ChallengeStorage getChallengeStorage()
@@ -220,6 +242,8 @@ public class Island
 			dest.set("owner-name", mOwnerName);
 		
 		dest.set("score", mScore);
+		dest.set("start-time", mIslandStartTime);
+		dest.set("use-date", mLastUseTime);
 		
 		mChallenges.save(dest);
 	}
@@ -273,6 +297,8 @@ public class Island
 			mOwnerName = source.getString("owner-name");
 		
 		mScore = source.getInt("score", 0);
+		mIslandStartTime = source.getLong("start-time", System.currentTimeMillis());
+		mLastUseTime = source.getLong("use-time", System.currentTimeMillis());
 		
 		mChallenges.load(source);
 	}
