@@ -1,9 +1,12 @@
 package au.com.addstar.skyblock.command;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -88,7 +91,18 @@ public class RankCommand implements ICommand
 		int rank = 1;
 		for (Entry<Integer, Island> entry : mManager.getTopScores())
 		{
-			sender.sendMessage(Utilities.format("&e%d&7: &e%s", rank, entry.getValue().getOwnerName()));
+			String nameString = entry.getValue().getOwnerName();
+			
+			if (!entry.getValue().getMembers().isEmpty())
+			{
+				ArrayList<String> names = new ArrayList<String>(entry.getValue().getMembers().size());
+				for (UUID member : entry.getValue().getMembers())
+					names.add(entry.getValue().getMemberName(member));
+			
+				nameString += "(" + StringUtils.join(names, ", ") + ")";
+			}
+			
+			sender.sendMessage(Utilities.format("&e%d&7: &e%s", rank, nameString));
 			
 			// Show only top 10 islands
 			if (++rank >= 10)

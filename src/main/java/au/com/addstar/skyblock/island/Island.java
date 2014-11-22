@@ -243,6 +243,11 @@ public class Island
 		return Collections.unmodifiableSet(mMembers.keySet());
 	}
 	
+	public String getMemberName(UUID member)
+	{
+		return mMembers.get(member);
+	}
+	
 	public void saveIfNeeded()
 	{
 		if (mIsModified || mChallenges.needsSaving())

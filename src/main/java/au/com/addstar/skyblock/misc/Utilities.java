@@ -28,7 +28,7 @@ public class Utilities
 		catch(IllegalArgumentException e)
 		{
 			OfflinePlayer result = Bukkit.getOfflinePlayer(nameOrUUID);
-			if (!result.hasPlayedBefore())
+			if (!result.hasPlayedBefore() && !result.isOnline())
 				return null;
 			return result;
 		}

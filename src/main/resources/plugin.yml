@@ -25,6 +25,14 @@ permissions:
     default: true
   skyblock.command.rank:
     default: true
+  skyblock.command.invite:
+    default: true
+  skyblock.command.kick:
+    default: true
+  skyblock.command.leave:
+    default: true
+  skyblock.command.home:
+    default: true
 # Admin commands
   skyblock.commands.template:
     default: op

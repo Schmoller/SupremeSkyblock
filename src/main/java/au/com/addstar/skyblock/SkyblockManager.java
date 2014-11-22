@@ -45,6 +45,10 @@ public class SkyblockManager
 	private int mIslandChunkSize;
 	private IslandTemplate mTemplate;
 	private long mIslandRestartCooldown;
+	private int mIslandMaxMembers;
+	
+	private boolean mPlayerExcludeOwn;
+	private int mPlayerMaxMembership;
 	
 	public SkyblockManager(SkyblockPlugin plugin)
 	{
@@ -112,7 +116,7 @@ public class SkyblockManager
 	
 	private void loadSettings(ConfigurationSection config)
 	{
-		// Load other options
+		// Load island options
 		ConfigurationSection island = config.getConfigurationSection("island");
 		mIslandChunkSize = island.getInt("size", 4);
 		if (mIslandChunkSize <= 0)
@@ -122,8 +126,18 @@ public class SkyblockManager
 		
 		mIslandRestartCooldown = Utilities.parseTimeDiffSafe(island.getString("restart-cooldown", "1d"), TimeUnit.DAYS.toMillis(1), mPlugin.getLogger());
 		
+		mIslandMaxMembers = island.getInt("max-members", -1);
+		
 		mTemplate = load(templateName);
 		
+		// Load player options
+		ConfigurationSection player = config.getConfigurationSection("player");
+		mPlayerExcludeOwn = player.getBoolean("exclude-own", true);
+		mPlayerMaxMembership = player.getInt("max-membership", 1);
+		if (mPlayerMaxMembership < 0)
+			mPlayerMaxMembership = 1;
+		
+		// Load general options
 		long saveInterval = Utilities.parseTimeDiffSafe(config.getString("general.save-interval", "5m"), TimeUnit.MINUTES.toMillis(5), mPlugin.getLogger());
 		saveInterval /= 50;
 		
@@ -337,6 +351,21 @@ public class SkyblockManager
 	public IslandTemplate getTemplate()
 	{
 		return mTemplate;
+	}
+	
+	public int getIslandMaxMembers()
+	{
+		return mIslandMaxMembers;
+	}
+	
+	public boolean getPlayerExcludeOwn()
+	{
+		return mPlayerExcludeOwn;
+	}
+	
+	public int getPlayerMaxMembership()
+	{
+		return mPlayerMaxMembership;
 	}
 	
 	public File getWorldFolder(String world)

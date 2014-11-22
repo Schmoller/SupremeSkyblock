@@ -1,9 +1,12 @@
 package au.com.addstar.skyblock.command;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -108,6 +111,15 @@ public class InfoCommand implements ICommand
 		else
 			sender.sendMessage(ChatColor.GRAY + " Rank:" + ChatColor.WHITE + " " + island.getRank());
 		sender.sendMessage(ChatColor.GRAY + " Score:" + ChatColor.WHITE + " " + island.getScore());
+		
+		if (!island.getMembers().isEmpty())
+		{
+			ArrayList<String> names = new ArrayList<String>(island.getMembers().size());
+			for (UUID member : island.getMembers())
+				names.add(island.getMemberName(member));
+			
+			sender.sendMessage(ChatColor.GRAY + " Members:" + ChatColor.WHITE + " " + StringUtils.join(names, ", "));
+		}
 		
 		sender.sendMessage(ChatColor.GRAY + " Created:" + ChatColor.WHITE + " " + DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.LONG).format(island.getStartTime()));
 		sender.sendMessage(ChatColor.GRAY + " Last Active:" + ChatColor.WHITE + " " + DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.LONG).format(island.getLastUseTime()));
