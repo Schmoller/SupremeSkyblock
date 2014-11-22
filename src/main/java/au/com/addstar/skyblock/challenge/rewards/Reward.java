@@ -2,6 +2,8 @@ package au.com.addstar.skyblock.challenge.rewards;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -49,6 +51,25 @@ public abstract class Reward
 			{
 				throw new IllegalArgumentException("XP rewards should be in the format: 'xp <amount>' or 'xp <amount>L' for levels");
 			}
+		}
+		else if (parts[0].equalsIgnoreCase("cmd"))
+		{
+			if (parts.length == 1)
+				throw new IllegalArgumentException("Command rewards should be in the format: 'cmd <name>;<command>' or 'cmd <command>'");
+			
+			String full = ChatColor.translateAlternateColorCodes('&', StringUtils.join(parts, " ", 1, parts.length));
+			String name;
+			String command;
+			if (full.contains(";"))
+			{
+				String[] split = full.split(";", 2);
+				name = split[0];
+				command = split[1];
+			}
+			else
+				name = command = full;
+			
+			return new CommandReward(command, name);
 		}
 		else
 			throw new IllegalArgumentException("Unknown reward type " + parts[0]);
