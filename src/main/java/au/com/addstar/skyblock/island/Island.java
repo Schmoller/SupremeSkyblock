@@ -2,17 +2,26 @@ package au.com.addstar.skyblock.island;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+
+import com.google.common.collect.Maps;
 
 import au.com.addstar.skyblock.SkyblockWorld;
 import au.com.addstar.skyblock.challenge.ChallengeStorage;
@@ -21,6 +30,8 @@ public class Island
 {
 	private UUID mOwner;
 	private String mOwnerName;
+	
+	private Map<UUID, String> mMembers;
 	
 	private final Coord mCoord;
 	private final SkyblockWorld mWorld;
@@ -36,7 +47,7 @@ public class Island
 	private boolean mIsModified = false;
 	private boolean mScoreDirty = false;
 	
-	public Island(UUID owner, Coord coords, SkyblockWorld world)
+	public Island(UUID owner, List<UUID> members, Coord coords, SkyblockWorld world)
 	{
 		mOwner = owner;
 		mCoord = coords;
@@ -46,6 +57,10 @@ public class Island
 		int halfSize = (mWorld.getIslandChunkSize() * 16) / 2;
 		
 		mIslandOrigin = new Location(mWorld.getWorld(), chunkMin.getX() * 16 + halfSize, 190, chunkMin.getZ() * 16 + halfSize);
+		
+		mMembers = Maps.newHashMap();
+		for(UUID id : members)
+			mMembers.put(id, null);
 		
 		mChallenges = new ChallengeStorage(this);
 	}
@@ -99,7 +114,10 @@ public class Island
 	
 	public boolean canAssist(Player player)
 	{
-		return player.getUniqueId().equals(mOwner);
+		if (player.getUniqueId().equals(mOwner))
+			return true;
+		
+		return mMembers.containsKey(player.getUniqueId());
 	}
 	
 	public Coord getCoord()
@@ -195,6 +213,36 @@ public class Island
 		return mChallenges;
 	}
 	
+	public void addMember(OfflinePlayer player)
+	{
+		String name;
+		if (player.isOnline())
+			name = ChatColor.stripColor(player.getPlayer().getDisplayName());
+		else
+			name = player.getName();
+		
+		mMembers.put(player.getUniqueId(), name);
+		mWorld.updateIslandMembership(this, player.getUniqueId());
+		mIsModified = true;
+	}
+	
+	public boolean removeMember(OfflinePlayer player)
+	{
+		if (mMembers.containsKey(player.getUniqueId()))
+		{
+			mMembers.remove(player.getUniqueId());
+			mWorld.updateIslandMembership(this, player.getUniqueId());
+			mIsModified = true;
+			return true;
+		}
+		return false;
+	}
+	
+	public Set<UUID> getMembers()
+	{
+		return Collections.unmodifiableSet(mMembers.keySet());
+	}
+	
 	public void saveIfNeeded()
 	{
 		if (mIsModified || mChallenges.needsSaving())
@@ -244,6 +292,10 @@ public class Island
 		dest.set("score", mScore);
 		dest.set("start-time", mIslandStartTime);
 		dest.set("use-date", mLastUseTime);
+		
+		ConfigurationSection members = dest.createSection("members");
+		for (Entry<UUID, String> member : mMembers.entrySet())
+			members.set(member.getKey().toString(), member.getValue());
 		
 		mChallenges.save(dest);
 	}
@@ -299,6 +351,16 @@ public class Island
 		mScore = source.getInt("score", 0);
 		mIslandStartTime = source.getLong("start-time", System.currentTimeMillis());
 		mLastUseTime = source.getLong("use-time", System.currentTimeMillis());
+		
+		if (source.isConfigurationSection("members"))
+		{
+			ConfigurationSection members = source.getConfigurationSection("members");
+			for (String key : members.getKeys(false))
+			{
+				UUID id = UUID.fromString(key);
+				mMembers.put(id, members.getString(key));
+			}
+		}
 		
 		mChallenges.load(source);
 	}

@@ -21,6 +21,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.google.common.collect.Ordering;
+import com.google.common.collect.Sets;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.io.Closeables;
 
@@ -256,6 +257,27 @@ public class SkyblockManager
 		}
 		
 		return null;
+	}
+	
+	public Set<Island> getIslands(UUID player)
+	{
+		Set<Island> islands = null;
+		for (SkyblockWorld world : mWorlds.values())
+		{
+			Set<Island> worldIslands = world.getIslands(player);
+			if (!worldIslands.isEmpty())
+			{
+				if (islands == null)
+					islands = worldIslands;
+				else
+					islands = Sets.union(islands, worldIslands);
+			}
+		}
+		
+		if (islands == null)
+			return Collections.emptySet();
+		else
+			return islands;
 	}
 	
 	public Island getIslandAt(Location location)

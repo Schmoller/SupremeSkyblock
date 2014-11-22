@@ -2,8 +2,10 @@ package au.com.addstar.skyblock;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -19,6 +21,12 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import com.google.common.base.Functions;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.SetMultimap;
+
 import au.com.addstar.skyblock.island.Coord;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.island.IslandTemplate;
@@ -32,14 +40,14 @@ public class SkyblockWorld
 	
 	private int mIslandChunkSize;
 	
-	private HashMap<UUID, Island> mOwnerMap;
+	private SetMultimap<UUID, Island> mOwnerMap;
 	
 	public SkyblockWorld(String name, SkyblockManager manager)
 	{
 		mManager = manager;
 		mName = name;
 		mGrid = new IslandGrid();
-		mOwnerMap = new HashMap<UUID, Island>();
+		mOwnerMap = HashMultimap.create();
 		
 		mIslandChunkSize = manager.getIslandChunkSize();
 	}
@@ -67,7 +75,7 @@ public class SkyblockWorld
 	public Island createIsland(Player player)
 	{
 		Coord coords = mGrid.getNextEmpty();
-		Island island = new Island(player.getUniqueId(), coords, this);
+		Island island = new Island(player.getUniqueId(), Collections.<UUID>emptyList(), coords, this);
 		
 		// Assign the space
 		mGrid.set(island);
@@ -85,9 +93,27 @@ public class SkyblockWorld
 		return island;
 	}
 	
+	public void updateIslandMembership(Island island, UUID player)
+	{
+		if (island.getMembers().contains(player))
+			mOwnerMap.put(player, island);
+		else
+			mOwnerMap.remove(player, island);
+	}
+	
 	public Island getIsland(UUID owner)
 	{
-		return mOwnerMap.get(owner);
+		for (Island island : mOwnerMap.get(owner))
+		{
+			if (island.getOwner().equals(owner))
+				return island;
+		}
+		return null;
+	}
+	
+	public Set<Island> getIslands(UUID player)
+	{
+		return mOwnerMap.get(player);
 	}
 	
 	public Island getIslandAt(Location location)
@@ -165,10 +191,29 @@ public class SkyblockWorld
 		{
 			String[] strCoords = key.split("_");
 			Coord coords = new Coord(Integer.parseInt(strCoords[0]), Integer.parseInt(strCoords[1]));
-			UUID owner = UUID.fromString(section.getString(key));
 			
-			Island island = new Island(owner, coords, this);
+			UUID owner;
+			List<UUID> members;
+			if (section.isString(key))
+			{
+				owner = UUID.fromString(section.getString(key));
+				members = Collections.emptyList();
+			}
+			else
+			{
+				List<String> ids = section.getStringList(key);
+				owner = UUID.fromString(ids.get(0));
+				
+				members = new ArrayList<UUID>(ids.size()-1);
+				for (String id : Iterables.skip(ids, 1))
+					members.add(UUID.fromString(id));
+			}
+			
+			Island island = new Island(owner, members, coords, this);
 			mOwnerMap.put(owner, island);
+			for (UUID member : members)
+				mOwnerMap.put(member, island);
+			
 			mGrid.set(island);
 		}
 	}
@@ -222,7 +267,14 @@ public class SkyblockWorld
 		ConfigurationSection section = islandsConfig.createSection("islands");
 		for(Island island : islands)
 		{
-			section.set(String.format("%d_%d", island.getCoord().getX(), island.getCoord().getZ()), island.getOwner().toString());
+			if (island.getMembers().isEmpty())
+				section.set(String.format("%d_%d", island.getCoord().getX(), island.getCoord().getZ()), island.getOwner().toString());
+			else
+			{
+				List<UUID> base = Lists.newArrayList(Iterables.concat(Lists.newArrayList(island.getOwner()), island.getMembers()));
+				List<String> ids = Lists.transform(base, Functions.toStringFunction());
+				section.set(String.format("%d_%d", island.getCoord().getX(), island.getCoord().getZ()), ids);
+			}
 			island.saveIfNeeded();
 		}
 		

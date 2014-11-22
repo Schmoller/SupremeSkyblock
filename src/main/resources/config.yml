@@ -8,6 +8,12 @@ general:
   # The maximum time in milliseconds that can be spent each tick calculating the score of an island
   score-calc-time-limit: 10
 
+player:
+  # When true, the players own island does not count towards the max-membership count 
+  exclude-own: true
+  # The maximum number of islands the player can be part of
+  max-membership: 1
+
 # Settings for islands
 island:
   # The size in chunks. Default is 4x4 chunks giving a 64x64 area from y level 0 to 255
@@ -16,6 +22,8 @@ island:
   template: original
   # The minimum time between restarts 
   restart-cooldown: 1d
+  # The maximum number of players that can be members of an island
+  max-members: -1
 
 # Below are the worlds that will be used as skyblock worlds
 # You can have as many as you like.
