@@ -1,5 +1,6 @@
 package au.com.addstar.skyblock.command;
 
+import java.text.DateFormat;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -108,6 +109,8 @@ public class InfoCommand implements ICommand
 			sender.sendMessage(ChatColor.GRAY + " Rank:" + ChatColor.WHITE + " " + island.getRank());
 		sender.sendMessage(ChatColor.GRAY + " Score:" + ChatColor.WHITE + " " + island.getScore());
 		
+		sender.sendMessage(ChatColor.GRAY + " Created:" + ChatColor.WHITE + " " + DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.LONG).format(island.getStartTime()));
+		sender.sendMessage(ChatColor.GRAY + " Last Active:" + ChatColor.WHITE + " " + DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.LONG).format(island.getLastUseTime()));
 		return true;
 	}
 
