@@ -71,6 +71,76 @@ public abstract class Reward
 			
 			return new CommandReward(command, name);
 		}
+		else if (parts[0].equalsIgnoreCase("perm"))
+		{
+			if (parts.length == 1)
+				throw new IllegalArgumentException("Permission rewards should be in the format: 'perm <name>;<perm>' or 'perm <perm>'");
+			
+			String full = ChatColor.translateAlternateColorCodes('&', StringUtils.join(parts, " ", 1, parts.length));
+			String name;
+			String perm;
+			if (full.contains(";"))
+			{
+				String[] split = full.split(";", 2);
+				name = split[0];
+				perm = split[1];
+			}
+			else
+				name = perm = full;
+			
+			return new PermissionReward(name, perm);
+		}
+		else if (parts[0].equalsIgnoreCase("group"))
+		{
+			if (parts.length == 1)
+				throw new IllegalArgumentException("Permission group rewards should be in the format: 'group <name>;<group>' or 'group <group>'");
+			
+			String full = ChatColor.translateAlternateColorCodes('&', StringUtils.join(parts, " ", 1, parts.length));
+			String name;
+			String group;
+			if (full.contains(";"))
+			{
+				String[] split = full.split(";", 2);
+				name = split[0];
+				group = split[1];
+			}
+			else
+				name = group = full;
+			
+			return new PermissionGroupReward(name, group);
+		}
+		else if (parts[0].equalsIgnoreCase("money"))
+		{
+			if (parts.length != 2)
+				throw new IllegalArgumentException("Money rewards should be in the format: 'money <amount>'");
+			
+			String raw = parts[1];
+			// Attempt to remove any currency symbols
+			int start = 0;
+			int end = raw.length();
+			
+			while(start < end && !Character.isDigit(raw.charAt(start)))
+				++start;
+			
+			while(end > start & !Character.isDigit(raw.charAt(end-1)))
+				--end;
+			
+			if (start >= end)
+				throw new IllegalArgumentException("Money rewards should be in the format: 'money <amount>'");
+			
+			try
+			{
+				double amount = Double.parseDouble(raw.substring(start, end));
+				if (amount < 0)
+					throw new IllegalArgumentException("Money rewards should be in the format: 'money <amount>'. No negative values");
+				
+				return new MoneyReward(amount);
+			}
+			catch(NumberFormatException e)
+			{
+				throw new IllegalArgumentException("Money rewards should be in the format: 'money <amount>'");
+			}
+		}
 		else
 			throw new IllegalArgumentException("Unknown reward type " + parts[0]);
 	}

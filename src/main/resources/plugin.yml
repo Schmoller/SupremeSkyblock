@@ -5,7 +5,8 @@ version: ${project.version}
 main: au.com.addstar.skyblock.SkyblockPlugin
 load: STARTUP
 
-softdepend: [WorldEdit]
+depend: [Monolith]
+softdepend: [WorldEdit, Vault]
 
 commands:
   skyblock:

@@ -29,6 +29,9 @@ import au.com.addstar.skyblock.challenge.ChallengeManager;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.island.IslandTemplate;
 import au.com.addstar.skyblock.misc.Utilities;
+import au.com.addstar.skyblock.vault.NullWrapper;
+import au.com.addstar.skyblock.vault.IVault;
+import au.com.addstar.skyblock.vault.VaultWrapper;
 
 public class SkyblockManager
 {
@@ -41,6 +44,7 @@ public class SkyblockManager
 	private PointLookup mPointLookup;
 	private ScoreUpdateSweep mScoreUpdater;
 	private SaveTask mSaver;
+	private IVault mVault;
 	
 	private int mIslandChunkSize;
 	private IslandTemplate mTemplate;
@@ -66,6 +70,11 @@ public class SkyblockManager
 	public void init()
 	{
 		mScoreUpdater.start();
+		
+		if (Bukkit.getPluginManager().isPluginEnabled("Vault"))
+			mVault = new VaultWrapper();
+		else
+			mVault = new NullWrapper();
 	}
 	
 	public void load(ConfigurationSection config)
@@ -386,5 +395,10 @@ public class SkyblockManager
 	public PointLookup getPointLookup()
 	{
 		return mPointLookup;
+	}
+	
+	public IVault getVault()
+	{
+		return mVault;
 	}
 }

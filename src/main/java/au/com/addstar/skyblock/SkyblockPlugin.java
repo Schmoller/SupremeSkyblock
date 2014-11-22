@@ -48,4 +48,9 @@ public class SkyblockPlugin extends JavaPlugin
 	{
 		return new EmptyGenerator();
 	}
+	
+	public SkyblockManager getManager()
+	{
+		return mManager;
+	}
 }
