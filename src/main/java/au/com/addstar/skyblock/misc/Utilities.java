@@ -17,6 +17,8 @@ import au.com.addstar.monolith.lookup.MaterialDefinition;
 
 public class Utilities
 {
+	public static final UUID nobody = UUID.fromString("00000000-0000-0000-0000-000000000000");
+	
 	@SuppressWarnings( "deprecation" )
 	public static OfflinePlayer getPlayer(String nameOrUUID)
 	{

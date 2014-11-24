@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 
 import au.com.addstar.skyblock.SkyblockWorld;
 import au.com.addstar.skyblock.challenge.ChallengeStorage;
+import au.com.addstar.skyblock.misc.Utilities;
 
 public class Island
 {
@@ -81,7 +82,29 @@ public class Island
 	
 	public void setOwnerName(String name)
 	{
+		mOwnerName = ChatColor.stripColor(name);
+		mIsModified = true;
+	}
+	
+	public void setOwner(Player player)
+	{
+		UUID oldOwner = mOwner;
+		mOwner = player.getUniqueId();
+		mOwnerName = ChatColor.stripColor(player.getDisplayName());
+		mMembers.remove(player.getUniqueId());
+		mWorld.updateOwner(this, oldOwner);
+		mIsModified = true;
+	}
+	
+	public void setOwnerByMember(UUID member)
+	{
+		String name = mMembers.get(member);
+		Validate.notNull(name, "That id does not refer to a member");
+		UUID oldOwner = mOwner;
+		mOwner = member;
 		mOwnerName = name;
+		mMembers.remove(member);
+		mWorld.updateOwner(this, oldOwner);
 		mIsModified = true;
 	}
 	
@@ -250,6 +273,16 @@ public class Island
 		return mMembers.get(member);
 	}
 	
+	public void abandonIsland()
+	{
+		mOwner = Utilities.nobody;
+		mOwnerName = "Unowned";
+		mMembers.clear();
+		
+		// TODO: Mark island for deleting
+		mIsModified = true;
+	}
+	
 	public void saveIfNeeded()
 	{
 		if (mIsModified || mChallenges.needsSaving())
@@ -269,7 +302,7 @@ public class Island
 			
 			save(config);
 			
-			config.save(new File(base, mOwner.toString()));
+			config.save(new File(base, String.format("%d,%d", mCoord.getX(), mCoord.getZ())));
 		}
 		catch(IOException e)
 		{
@@ -316,7 +349,7 @@ public class Island
 	public void load()
 	{
 		File base = new File(mWorld.getManager().getWorldFolder(mWorld.getName()), "islands");
-		File islandFile = new File(base, mOwner.toString());
+		File islandFile = new File(base, String.format("%d,%d", mCoord.getX(), mCoord.getZ()));
 		
 		if (!islandFile.exists())
 			return;

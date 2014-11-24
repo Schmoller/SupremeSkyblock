@@ -136,6 +136,14 @@ public class SkyblockWorld
 		return mManager;
 	}
 	
+	public void updateOwner(Island island, UUID oldOwner)
+	{
+		if (!island.getMembers().contains(oldOwner))
+			mOwnerMap.remove(oldOwner, island);
+		
+		mOwnerMap.put(island.getOwner(), island);
+	}
+	
 	public boolean load()
 	{
 		try
