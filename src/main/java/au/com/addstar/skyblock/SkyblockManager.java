@@ -55,6 +55,8 @@ public class SkyblockManager
 	
 	private boolean mPlayerExcludeOwn;
 	private int mPlayerMaxMembership;
+	private boolean mPlayerReverseLava;
+	private boolean mPlayerReverseWater;
 	
 	public SkyblockManager(SkyblockPlugin plugin)
 	{
@@ -153,6 +155,9 @@ public class SkyblockManager
 		mPlayerMaxMembership = player.getInt("max-membership", 1);
 		if (mPlayerMaxMembership < 0)
 			mPlayerMaxMembership = 1;
+		
+		mPlayerReverseLava = player.getBoolean("reverse.lava");
+		mPlayerReverseWater = player.getBoolean("reverse.water");
 		
 		// Load general options
 		long saveInterval = Utilities.parseTimeDiffSafe(config.getString("general.save-interval", "5m"), TimeUnit.MINUTES.toMillis(5), mPlugin.getLogger());
@@ -409,6 +414,16 @@ public class SkyblockManager
 	public int getPlayerMaxMembership()
 	{
 		return mPlayerMaxMembership;
+	}
+	
+	public boolean getPlayerCanReverseLava()
+	{
+		return mPlayerReverseLava;
+	}
+	
+	public boolean getPlayerCanReverseWater()
+	{
+		return mPlayerReverseWater;
 	}
 	
 	public File getWorldFolder(String world)

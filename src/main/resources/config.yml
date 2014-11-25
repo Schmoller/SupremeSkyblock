@@ -16,6 +16,11 @@ player:
   exclude-own: true
   # The maximum number of islands the player can be part of
   max-membership: 1
+  reverse:
+    # Allows you to reverse lava turning into obsidian
+    lava: true
+    # Allows you to reverse water turning into cobblestone or stone
+    water: true
 
 # Settings for islands
 island:
