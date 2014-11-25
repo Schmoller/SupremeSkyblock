@@ -90,6 +90,7 @@ public class HomeCommand implements ICommand
 			throw new IllegalArgumentException("You do not own, and are not a member of that island");
 		
 		player.teleport(island.getIslandSpawn());
+		Utilities.updateNames(player, island);
 		if (island.getOwner().equals(player.getUniqueId()))
 			player.sendMessage(Utilities.format("&6[Skyblock] &aYou have been teleported to your island"));
 		else

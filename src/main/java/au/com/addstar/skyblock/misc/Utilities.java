@@ -212,4 +212,20 @@ public class Utilities
 		else
 			player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
 	}
+	
+	public static void updateNames(Player player, Island island)
+	{
+		String name = ChatColor.stripColor(player.getDisplayName());
+		
+		if (island.getOwner().equals(player.getUniqueId()))
+		{
+			if (!island.getOwnerName().equals(name))
+				island.setOwnerName(name);
+		}
+		else if (island.getMembers().contains(player.getUniqueId()))
+		{
+			if (!island.getMemberName(player.getUniqueId()).equals(name))
+				island.setMemberName(player.getUniqueId(), name);
+		}
+	}
 }

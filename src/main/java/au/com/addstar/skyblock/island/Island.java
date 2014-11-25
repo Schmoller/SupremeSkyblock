@@ -273,6 +273,15 @@ public class Island
 		return mMembers.get(member);
 	}
 	
+	public void setMemberName(UUID member, String name)
+	{
+		if (mMembers.containsKey(member))
+		{
+			mMembers.put(member, ChatColor.stripColor(name));
+			mIsModified = true;
+		}
+	}
+	
 	public void abandonIsland()
 	{
 		UUID oldOwner = mOwner;

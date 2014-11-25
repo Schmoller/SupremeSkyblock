@@ -14,6 +14,7 @@ import au.com.addstar.monolith.command.ICommand;
 import au.com.addstar.skyblock.SkyblockManager;
 import au.com.addstar.skyblock.SkyblockWorld;
 import au.com.addstar.skyblock.island.Island;
+import au.com.addstar.skyblock.misc.Utilities;
 
 public class DefaultCommand implements ICommand
 {
@@ -71,10 +72,7 @@ public class DefaultCommand implements ICommand
 		{
 			Location spawn = existing.getIslandSpawn();
 			
-			// In the future this should not be needed, but this is not saved yet
-			if (spawn == null)
-				spawn = mManager.getTemplate().getSpawnLocation(existing.getIslandOrigin());
-			
+			Utilities.updateNames(player, existing);
 			player.teleport(spawn);
 			player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Skyblock] &fYou have been teleported to your skyblock island"));
 		}
@@ -96,5 +94,4 @@ public class DefaultCommand implements ICommand
 	{
 		return null;
 	}
-
 }
