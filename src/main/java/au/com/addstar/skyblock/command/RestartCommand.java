@@ -125,6 +125,9 @@ public class RestartCommand implements ICommand
 					fIsland.clear();
 					fIsland.placeIsland();
 					
+					for (Player player : Utilities.getPlayersOnIsland(fIsland))
+						Utilities.sendPlayerHome(player);
+					
 					if (fOtherIsland)
 						sender.sendMessage(ChatColor.GOLD + "[Skyblock] " + ChatColor.WHITE + fIsland.getOwnerName() + "'s island has been reset");
 					else

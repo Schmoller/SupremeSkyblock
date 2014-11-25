@@ -107,6 +107,7 @@ public class LeaveCommand implements ICommand
 				{
 					fIsland.removeMember(player);
 					player.sendMessage(Utilities.format("&6[Skyblock] &eYou have left %s's island.", fIsland.getOwnerName()));
+					Utilities.sendPlayerHome(player);
 					Player owner = Bukkit.getPlayer(fIsland.getOwner());
 					if (owner != null)
 						owner.sendMessage(Utilities.format("&6[Skyblock] &e%s has left your island.", player.getDisplayName()));
