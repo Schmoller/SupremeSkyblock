@@ -48,6 +48,7 @@ public class SkyblockManager
 	private IVault mVault;
 	
 	private int mIslandChunkSize;
+	private int mIslandHeight;
 	private IslandTemplate mTemplate;
 	private long mIslandRestartCooldown;
 	private int mIslandMaxMembers;
@@ -145,6 +146,10 @@ public class SkyblockManager
 		mIslandChunkSize = island.getInt("size", 4);
 		if (mIslandChunkSize <= 0)
 			mIslandChunkSize = 4;
+		
+		mIslandHeight  = island.getInt("height", 190);
+		if (mIslandHeight < 10)
+			mIslandHeight = 190;
 		
 		String templateName = island.getString("template", "original");
 		
@@ -392,6 +397,11 @@ public class SkyblockManager
 	public int getIslandChunkSize()
 	{
 		return mIslandChunkSize;
+	}
+	
+	public int getIslandHeight()
+	{
+		return mIslandHeight;
 	}
 	
 	public long getIslandRestartCooldown()

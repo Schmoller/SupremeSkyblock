@@ -57,7 +57,7 @@ public class Island
 		Coord chunkMin = getChunkCoord();
 		int halfSize = (mWorld.getIslandChunkSize() * 16) / 2;
 		
-		mIslandOrigin = new Location(mWorld.getWorld(), chunkMin.getX() * 16 + halfSize, 190, chunkMin.getZ() * 16 + halfSize);
+		mIslandOrigin = new Location(mWorld.getWorld(), chunkMin.getX() * 16 + halfSize, mWorld.getIslandHeight(), chunkMin.getZ() * 16 + halfSize);
 		
 		mMembers = Maps.newHashMap();
 		for(UUID id : members)
