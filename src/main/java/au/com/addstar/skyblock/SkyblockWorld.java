@@ -83,6 +83,7 @@ public class SkyblockWorld
 	public Island createIsland(Player player)
 	{
 		Coord coords = mGrid.getNextEmpty();
+		mManager.getPlugin().getLogger().info(String.format("Creating island %s (%s)", coords, player.getDisplayName()));
 		Island island = new Island(player.getUniqueId(), Collections.<UUID>emptyList(), coords, this);
 		
 		// Assign the space
@@ -103,6 +104,8 @@ public class SkyblockWorld
 	
 	public void removeIsland(Island island)
 	{
+		mManager.getPlugin().getLogger().info(String.format("Removing island %s (%s)", island.getCoord(), island.getOwnerName()));
+		
 		mManager.removeIsland(island);
 		for (UUID member : island.getMembers())
 			mOwnerMap.remove(member, island);

@@ -284,6 +284,7 @@ public class Island
 	
 	public void abandonIsland()
 	{
+		mWorld.getManager().getPlugin().getLogger().info(String.format("Abandoning island %s (%s)", mCoord, mOwnerName));
 		UUID oldOwner = mOwner;
 		mOwner = Utilities.nobody;
 		mOwnerName = "Unowned";

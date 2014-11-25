@@ -125,6 +125,8 @@ public class RestartCommand implements ICommand
 					fIsland.clear();
 					fIsland.placeIsland();
 					
+					mManager.getPlugin().getLogger().info(String.format("Restarting island %s (%s)", fIsland.getCoord(), fIsland.getOwnerName()));
+					
 					for (Player player : Utilities.getPlayersOnIsland(fIsland))
 						Utilities.sendPlayerHome(player);
 					
