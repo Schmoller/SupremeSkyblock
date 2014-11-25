@@ -73,7 +73,7 @@ public class DefaultCommand implements ICommand
 			Location spawn = existing.getIslandSpawn();
 			
 			Utilities.updateNames(player, existing);
-			player.teleport(spawn);
+			Utilities.safeTeleport(player, spawn);
 			player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Skyblock] &fYou have been teleported to your skyblock island"));
 		}
 		// Create a new island
@@ -81,7 +81,7 @@ public class DefaultCommand implements ICommand
 		{
 			SkyblockWorld world = mManager.getNextSkyblockWorld();
 			Island island = world.createIsland(player);
-			player.teleport(island.getIslandSpawn());
+			Utilities.safeTeleport(player, island.getIslandSpawn());
 			
 			world.save();
 			player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Skyblock] &fA new island has been created for you."));

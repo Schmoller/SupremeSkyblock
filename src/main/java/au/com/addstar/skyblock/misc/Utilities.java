@@ -13,6 +13,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -208,9 +210,9 @@ public class Utilities
 	{
 		Island theirIsland = SkyblockPlugin.getPlugin(SkyblockPlugin.class).getManager().getIsland(player.getUniqueId());
 		if (theirIsland != null)
-			player.teleport(theirIsland.getIslandSpawn());
+			Utilities.safeTeleport(player, theirIsland.getIslandSpawn());
 		else
-			player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+			Utilities.safeTeleport(player, Bukkit.getWorlds().get(0).getSpawnLocation());
 	}
 	
 	public static void updateNames(Player player, Island island)
@@ -227,5 +229,99 @@ public class Utilities
 			if (!island.getMemberName(player.getUniqueId()).equals(name))
 				island.setMemberName(player.getUniqueId(), name);
 		}
+	}
+	
+	public static boolean isSafeLocation(Location loc)
+	{
+		Block feet = loc.getBlock();
+		Block ground = feet.getRelative(BlockFace.DOWN);
+		Block head = feet.getRelative(BlockFace.UP);
+		
+		return (isSafe(feet) && isSafe(head) && ground.getType().isSolid());
+	}
+	
+	private static boolean isSafe(Block block)
+	{
+		switch(block.getType())
+		{
+		case AIR:
+		case SUGAR_CANE_BLOCK:
+		case LONG_GRASS:
+		case CROPS:
+		case CARROT:
+		case POTATO:
+		case RED_MUSHROOM:
+		case RED_ROSE:
+		case BROWN_MUSHROOM:
+		case YELLOW_FLOWER:
+		case DEAD_BUSH:
+		case SIGN_POST:
+		case WALL_SIGN:
+			return true;
+		default:
+			return false;
+		}
+	}
+	
+	public static boolean safeTeleport(Player player, Location loc)
+	{
+		if (isSafeLocation(loc))
+		{
+			player.teleport(loc);
+			return true;
+		}
+		
+		int horRange = 30;
+		
+		double closestDist = Double.MAX_VALUE;
+		Location closest = null;
+		
+		for(int y = 0; y < loc.getWorld().getMaxHeight(); ++y)
+		{
+			for(int x = loc.getBlockX() - horRange; x < loc.getBlockX() + horRange; ++x)
+			{
+				for(int z = loc.getBlockZ() - horRange; z < loc.getBlockZ() + horRange; ++z)
+				{
+					for(int i = 0; i < 2; ++i)
+					{
+						int yy = loc.getBlockY();
+						
+						if(i == 0)
+						{
+							yy -= y;
+							if(yy < 0)
+								continue;
+						}
+						else
+						{
+							yy += y;
+							if(yy >= loc.getWorld().getMaxHeight())
+								continue;
+						}
+	
+						Location l = new Location(loc.getWorld(), x, yy, z);
+						double dist = loc.distanceSquared(l);
+						
+						if(dist < closestDist && isSafeLocation(l))
+						{
+							closest = l;
+							closestDist = dist;
+						}
+					}
+				}
+			}
+			
+			if(y*y > closestDist)
+				break;
+		}
+		
+		if(closest == null)
+			return false;
+		
+		closest.setPitch(loc.getPitch());
+		closest.setYaw(loc.getYaw());
+		
+		player.teleport(closest);
+		return true;
 	}
 }
