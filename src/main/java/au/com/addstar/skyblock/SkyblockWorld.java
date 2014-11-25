@@ -107,6 +107,11 @@ public class SkyblockWorld
 			Utilities.sendPlayerHome(player);
 		
 		island.clear();
+		
+		File base = new File(mManager.getWorldFolder(mWorld.getName()), "islands");
+		File file = new File(base, String.format("%d,%d", island.getCoord().getX(), island.getCoord().getZ()));
+		if (file.exists())
+			file.delete();
 	}
 	
 	public void updateIslandMembership(Island island, UUID player)
