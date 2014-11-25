@@ -202,8 +202,8 @@ public class SkyblockWorld
 			File worldDir = mManager.getWorldFolder(mName);
 			
 			loadWorld();
-			loadIslands(worldDir);
 			loadSettings(worldDir);
+			loadIslands(worldDir);
 			
 			return true;
 		}
