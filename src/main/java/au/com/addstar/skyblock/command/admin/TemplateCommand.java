@@ -1,4 +1,4 @@
-package au.com.addstar.skyblock.command;
+package au.com.addstar.skyblock.command.admin;
 
 import java.io.File;
 import java.util.EnumSet;

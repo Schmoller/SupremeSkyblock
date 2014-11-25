@@ -25,7 +25,6 @@ public class BaseCommand extends RootCommandDispatcher
 		registerCommand(new CancelCommand());
 		
 		// Admin commands
-		registerCommand(new TemplateCommand(manager));
 		registerCommand(new AdminBaseCommand(manager));
 	}
 }

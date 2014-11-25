@@ -18,6 +18,7 @@ public class AdminBaseCommand extends CommandDispatcher implements ICommand
 		super("Provides access to a whole bunch of admin commands");
 		
 		registerCommand(new AbandonCommand(manager));
+		registerCommand(new TemplateCommand(manager));
 	}
 	
 	@Override
