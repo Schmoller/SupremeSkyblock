@@ -27,6 +27,10 @@ island:
   restart-cooldown: 1d
   # The maximum number of players that can be members of an island
   max-members: -1
+  # The number of blocks around the edge of the island that becomes an unowned area.
+  # In this area, anyone can build or destroy blocks
+  # This amount will be deducted from the amount of space the island has
+  neutral-zone-size: 4
 
 # Below are the worlds that will be used as skyblock worlds
 # You can have as many as you like.

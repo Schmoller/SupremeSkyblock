@@ -134,6 +134,11 @@ public class SkyblockWorld
 	
 	public Island getIslandAt(Location location)
 	{
+		return getIslandAt(location, true);
+	}
+	
+	public Island getIslandAt(Location location, boolean includeNeutralZone)
+	{
 		Validate.isTrue(location.getWorld().equals(mWorld));
 		
 		// Chunk coords
@@ -144,7 +149,24 @@ public class SkyblockWorld
 		x = (int)Math.floor(x / (float)mIslandChunkSize);
 		z = (int)Math.floor(z / (float)mIslandChunkSize);
 		
-		return mGrid.get(x, z);
+		Island island = mGrid.get(x, z);
+		
+		// Check if in neutral zone
+		if (includeNeutralZone && island != null)
+		{
+			Coord min = island.getChunkCoord();
+			int minX = min.getX() * 16 + mManager.getIslandNeutralSize();
+			int minZ = min.getZ() * 16 + mManager.getIslandNeutralSize();
+			
+			int maxX = (min.getX() + getIslandChunkSize()) * 16 - mManager.getIslandNeutralSize();
+			int maxZ = (min.getZ() + getIslandChunkSize()) * 16 - mManager.getIslandNeutralSize();
+			
+			if (location.getBlockX() < minX || location.getBlockX() >= maxX || location.getBlockZ() < minZ || location.getBlockZ() >= maxZ)
+				// Inside neutral zone
+				return null;
+		}
+		
+		return island;
 	}
 	
 	public SkyblockManager getManager()

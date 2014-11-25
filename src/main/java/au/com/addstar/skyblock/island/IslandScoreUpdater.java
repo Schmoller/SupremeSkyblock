@@ -35,8 +35,8 @@ public class IslandScoreUpdater extends BukkitRunnable
 	{
 		mIsland = island;
 		
-		mMinBlock = new Location(island.getWorld().getWorld(), island.getChunkCoord().getX() * 16, 0, island.getChunkCoord().getZ() * 16);
-		mMaxBlock = new Location(island.getWorld().getWorld(), (island.getChunkCoord().getX() + island.getWorld().getIslandChunkSize()) * 16 - 1, island.getWorld().getWorld().getMaxHeight(), (island.getChunkCoord().getZ() + island.getWorld().getIslandChunkSize()) * 16 - 1);
+		mMinBlock = new Location(island.getWorld().getWorld(), island.getChunkCoord().getX() * 16 + island.getWorld().getManager().getIslandNeutralSize(), 0, island.getChunkCoord().getZ() * 16 + island.getWorld().getManager().getIslandNeutralSize());
+		mMaxBlock = new Location(island.getWorld().getWorld(), (island.getChunkCoord().getX() + island.getWorld().getIslandChunkSize()) * 16 - island.getWorld().getManager().getIslandNeutralSize() - 1, island.getWorld().getWorld().getMaxHeight(), (island.getChunkCoord().getZ() + island.getWorld().getIslandChunkSize()) * 16 - island.getWorld().getManager().getIslandNeutralSize() - 1);
 		
 		mMaxIterationTime = TimeUnit.NANOSECONDS.convert(timeLimit, TimeUnit.MILLISECONDS);
 		

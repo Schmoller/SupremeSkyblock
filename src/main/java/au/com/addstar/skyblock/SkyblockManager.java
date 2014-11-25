@@ -51,6 +51,7 @@ public class SkyblockManager
 	private IslandTemplate mTemplate;
 	private long mIslandRestartCooldown;
 	private int mIslandMaxMembers;
+	private int mIslandNeutralSize;
 	
 	private boolean mPlayerExcludeOwn;
 	private int mPlayerMaxMembership;
@@ -140,6 +141,9 @@ public class SkyblockManager
 		mIslandRestartCooldown = Utilities.parseTimeDiffSafe(island.getString("restart-cooldown", "1d"), TimeUnit.DAYS.toMillis(1), mPlugin.getLogger());
 		
 		mIslandMaxMembers = island.getInt("max-members", -1);
+		mIslandNeutralSize = island.getInt("neutral-zone-size", 4);
+		if (mIslandNeutralSize < 0)
+			mIslandNeutralSize = 4;
 		
 		mTemplate = load(templateName);
 		
@@ -316,6 +320,15 @@ public class SkyblockManager
 		return world.getIslandAt(location);
 	}
 	
+	public Island getIslandAt(Location location, boolean includeNeutralZone)
+	{
+		SkyblockWorld world = mWorlds.get(location.getWorld());
+		if (world == null)
+			return null;
+		
+		return world.getIslandAt(location, includeNeutralZone);
+	}
+	
 	public void queueScoreUpdate(Island island)
 	{
 		mScoreUpdater.queueIsland(island);
@@ -381,6 +394,11 @@ public class SkyblockManager
 	public int getIslandMaxMembers()
 	{
 		return mIslandMaxMembers;
+	}
+	
+	public int getIslandNeutralSize()
+	{
+		return mIslandNeutralSize;
 	}
 	
 	public boolean getPlayerExcludeOwn()

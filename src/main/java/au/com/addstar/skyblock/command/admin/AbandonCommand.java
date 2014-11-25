@@ -79,7 +79,7 @@ public class AbandonCommand implements ICommand
 		}
 		else if (sender instanceof Player)
 		{
-			island = mManager.getIslandAt(((Player)sender).getLocation());
+			island = mManager.getIslandAt(((Player)sender).getLocation(), false);
 			if (island == null)
 				throw new IllegalArgumentException("There is no island where you are standing");
 		}
