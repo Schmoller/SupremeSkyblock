@@ -30,7 +30,7 @@ public class SkyblockPlugin extends JavaPlugin
 	
 	private void onPostEnable()
 	{
-		mManager.load(getConfig());
+		mManager.load();
 		Bukkit.getPluginManager().registerEvents(new ProtectionListener(mManager), this);
 		Bukkit.getPluginManager().registerEvents(new GameplayListener(mManager), this);
 		

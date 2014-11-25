@@ -6,27 +6,24 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 
 import au.com.addstar.monolith.command.BadArgumentException;
-import au.com.addstar.monolith.command.CommandDispatcher;
 import au.com.addstar.monolith.command.CommandSenderType;
 import au.com.addstar.monolith.command.ICommand;
 import au.com.addstar.skyblock.SkyblockManager;
+import au.com.addstar.skyblock.misc.Utilities;
 
-public class AdminBaseCommand extends CommandDispatcher implements ICommand
+public class ReloadCommand implements ICommand
 {
-	public AdminBaseCommand(SkyblockManager manager)
+	private SkyblockManager mManager;
+	
+	public ReloadCommand(SkyblockManager manager)
 	{
-		super("Provides access to a whole bunch of admin commands");
-		
-		registerCommand(new AbandonCommand(manager));
-		registerCommand(new TemplateCommand(manager));
-		registerCommand(new GotoCommand(manager));
-		registerCommand(new ReloadCommand(manager));
+		mManager = manager;
 	}
 	
 	@Override
 	public String getName()
 	{
-		return "admin";
+		return "reload";
 	}
 
 	@Override
@@ -38,19 +35,19 @@ public class AdminBaseCommand extends CommandDispatcher implements ICommand
 	@Override
 	public String getPermission()
 	{
-		return "skyblock.command.admin";
+		return "skyblock.command.reload";
 	}
 
 	@Override
 	public String getUsageString( String label, CommandSender sender )
 	{
-		return label + " <command>";
+		return label;
 	}
 
 	@Override
 	public String getDescription()
 	{
-		return "Provides access to a whole bunch of admin commands";
+		return "Reloads the configuration";
 	}
 
 	@Override
@@ -62,12 +59,20 @@ public class AdminBaseCommand extends CommandDispatcher implements ICommand
 	@Override
 	public boolean onCommand( CommandSender sender, String parent, String label, String[] args ) throws BadArgumentException
 	{
-		return dispatchCommand(sender, parent, label, args);
+		if (args.length != 0)
+			return false;
+		
+		mManager.reload();
+		
+		sender.sendMessage(Utilities.format("&6[Skyblock] &fConfiguration reloaded"));
+		
+		return true;
 	}
 
 	@Override
 	public List<String> onTabComplete( CommandSender sender, String parent, String label, String[] args )
 	{
-		return tabComplete(sender, parent, label, args);
+		return null;
 	}
+
 }

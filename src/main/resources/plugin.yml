@@ -51,6 +51,8 @@ permissions:
       skyblock.commands.restart: true
   skyblock.commands.goto:
     default: op
+  skyblock.command.reload:
+    default: op
 # Other permissions
   skyblock.protection.bypass:
     default: op

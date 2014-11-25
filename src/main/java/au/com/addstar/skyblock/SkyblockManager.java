@@ -83,13 +83,12 @@ public class SkyblockManager
 			mVault = new NullWrapper();
 	}
 	
-	public void load(ConfigurationSection config)
+	public void reload()
 	{
+		ConfigurationSection config = mPlugin.getConfig();
 		loadSettings(config);
-		loadWorlds(config);
 		mScoreUpdater.load(config);
 		mAbandonSweep.load(config);
-		loadTopList();
 		
 		mChallenges.loadChallenges(new File(mPlugin.getDataFolder(), "challenges.yml"));
 		
@@ -98,6 +97,15 @@ public class SkyblockManager
 			mPlugin.saveResource("points.yml", false);
 		
 		mPointLookup.load(pointFile, mPlugin.getLogger());
+	}
+	
+	public void load()
+	{
+		reload();
+		
+		ConfigurationSection config = mPlugin.getConfig();
+		loadWorlds(config);
+		loadTopList();
 	}
 	
 	private void loadWorlds(ConfigurationSection config)
