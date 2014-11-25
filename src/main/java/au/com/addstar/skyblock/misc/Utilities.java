@@ -140,8 +140,9 @@ public class Utilities
 	}
 	
 	private static Pattern mDiffPattern;
-	private static TimeUnit[] mUnits = new TimeUnit[] {TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS};
-	private static String[] mUnitNames = new String[] {"d", "h", "m", "s"};
+	private static int[] mUnitValues = new int[] {365, 30, 7, 1, 1, 1, 1};
+	private static TimeUnit[] mUnits = new TimeUnit[] {TimeUnit.DAYS, TimeUnit.DAYS, TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS};
+	private static String[] mUnitNames = new String[] {"y", "mo", "w", "d", "h", "m", "s"};
 	
 	public static long parseTimeDiff(String diffString)
 	{
@@ -173,7 +174,9 @@ public class Utilities
 			if (match.group(i+1) != null)
 			{
 				TimeUnit unit = mUnits[i];
-				time += unit.toMillis(Integer.parseInt(match.group(i+1)));
+				int val = Integer.parseInt(match.group(i+1));
+				val *= mUnitValues[i];
+				time += unit.toMillis(val);
 			}
 		}
 		

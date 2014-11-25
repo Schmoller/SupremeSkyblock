@@ -29,6 +29,7 @@ import au.com.addstar.skyblock.challenge.ChallengeManager;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.island.IslandTemplate;
 import au.com.addstar.skyblock.misc.Utilities;
+import au.com.addstar.skyblock.misc.ValueCallback;
 import au.com.addstar.skyblock.vault.NullWrapper;
 import au.com.addstar.skyblock.vault.IVault;
 import au.com.addstar.skyblock.vault.VaultWrapper;
@@ -46,6 +47,10 @@ public class SkyblockManager
 	private AbandonedIslandSweep mAbandonSweep;
 	private SaveTask mSaver;
 	private IVault mVault;
+	
+	// Config values
+	
+	private long mGeneralCleanupCutoff;
 	
 	private int mIslandChunkSize;
 	private int mIslandHeight;
@@ -181,6 +186,8 @@ public class SkyblockManager
 		
 		mSaver = new SaveTask(this);
 		mSaver.runTaskTimer(mPlugin, saveInterval, saveInterval);
+		
+		mGeneralCleanupCutoff = Utilities.parseTimeDiffSafe(config.getString("general.cleanup-cutoff", "4mo"), TimeUnit.DAYS.toMillis(520), mPlugin.getLogger());
 	}
 	
 	private IslandTemplate load(String name)
@@ -387,6 +394,11 @@ public class SkyblockManager
 		return Collections.unmodifiableSet(mTopIslands.entries());
 	}
 	
+	public void runCleanup(long cutoffDate, ValueCallback<Integer> callback)
+	{
+		new PurgeTask(cutoffDate, mWorlds.values(), callback).runTaskTimer(mPlugin, 1, 1);
+	}
+	
 	void removeIsland(Island island)
 	{
 		Integer score = mTopReverse.remove(island);
@@ -442,6 +454,11 @@ public class SkyblockManager
 	public boolean getPlayerCanReverseWater()
 	{
 		return mPlayerReverseWater;
+	}
+	
+	public long getCleanupCutoff()
+	{
+		return mGeneralCleanupCutoff;
 	}
 	
 	public File getWorldFolder(String world)

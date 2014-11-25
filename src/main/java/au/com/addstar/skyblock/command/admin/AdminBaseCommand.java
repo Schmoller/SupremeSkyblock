@@ -21,6 +21,7 @@ public class AdminBaseCommand extends CommandDispatcher implements ICommand
 		registerCommand(new TemplateCommand(manager));
 		registerCommand(new GotoCommand(manager));
 		registerCommand(new ReloadCommand(manager));
+		registerCommand(new CleanupCommand(manager));
 	}
 	
 	@Override
