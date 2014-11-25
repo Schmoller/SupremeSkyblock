@@ -72,7 +72,19 @@ public class IslandGrid
 	
 	public void remove(Island island)
 	{
-		throw new UnsupportedOperationException("Not yet implemented");
+		int x = island.getCoord().getX();
+		int z = island.getCoord().getZ();
+		
+		if (x < mMinX || z < mMinZ)
+			return;
+		
+		x -= mMinX;
+		z -= mMinZ;
+		
+		if (x >= mPlacements.length || z >= mPlacements[x].length)
+			return;
+		
+		mPlacements[x][z] = null;
 	}
 	
 	public Coord getNextEmpty()

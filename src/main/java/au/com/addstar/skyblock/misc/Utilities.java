@@ -1,5 +1,7 @@
 package au.com.addstar.skyblock.misc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -8,12 +10,16 @@ import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import au.com.addstar.monolith.lookup.Lookup;
 import au.com.addstar.monolith.lookup.MaterialDefinition;
+import au.com.addstar.skyblock.SkyblockPlugin;
+import au.com.addstar.skyblock.island.Island;
 
 public class Utilities
 {
@@ -183,5 +189,27 @@ public class Utilities
 			logger.severe("Failed to parse date diff '" + diffString + "'. Reason: " + e.getMessage());
 			return def;
 		}
+	}
+	
+	public static List<Player> getPlayersOnIsland(Island island)
+	{
+		Location temp = new Location(null, 0, 0, 0); 
+		ArrayList<Player> players = new ArrayList<Player>();
+		for (Player player : island.getWorld().getWorld().getPlayers())
+		{
+			if (island.getWorld().getIslandAt(player.getLocation(temp)) == island)
+				players.add(player);
+		}
+		
+		return players;
+	}
+	
+	public static void sendPlayerHome(Player player)
+	{
+		Island theirIsland = SkyblockPlugin.getPlugin(SkyblockPlugin.class).getManager().getIsland(player.getUniqueId());
+		if (theirIsland != null)
+			player.teleport(theirIsland.getIslandSpawn());
+		else
+			player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
 	}
 }

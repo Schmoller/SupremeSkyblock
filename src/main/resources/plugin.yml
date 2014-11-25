@@ -37,6 +37,8 @@ permissions:
   skyblock.command.transfer:
     default: true
 # Admin commands
+  skyblock.command.admin:
+    default: op
   skyblock.commands.template:
     default: op
   skyblock.commands.info.others:

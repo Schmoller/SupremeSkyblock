@@ -43,6 +43,7 @@ public class SkyblockManager
 	private ChallengeManager mChallenges;
 	private PointLookup mPointLookup;
 	private ScoreUpdateSweep mScoreUpdater;
+	private AbandonedIslandSweep mAbandonSweep;
 	private SaveTask mSaver;
 	private IVault mVault;
 	
@@ -65,11 +66,13 @@ public class SkyblockManager
 		mPointLookup = new PointLookup();
 		
 		mScoreUpdater = new ScoreUpdateSweep(plugin);
+		mAbandonSweep = new AbandonedIslandSweep(plugin);
 	}
 	
 	public void init()
 	{
 		mScoreUpdater.start();
+		mAbandonSweep.start();
 		
 		if (Bukkit.getPluginManager().isPluginEnabled("Vault"))
 			mVault = new VaultWrapper();
@@ -82,6 +85,7 @@ public class SkyblockManager
 		loadSettings(config);
 		loadWorlds(config);
 		mScoreUpdater.load(config);
+		mAbandonSweep.load(config);
 		loadTopList();
 		
 		mChallenges.loadChallenges(new File(mPlugin.getDataFolder(), "challenges.yml"));
@@ -317,6 +321,11 @@ public class SkyblockManager
 		mScoreUpdater.queueIsland(island);
 	}
 	
+	public void queueAbandoned(Island island)
+	{
+		mAbandonSweep.queueIsland(island);
+	}
+	
 	public void updateRank(Island island)
 	{
 		Integer oldScore = mTopReverse.remove(island);
@@ -345,6 +354,13 @@ public class SkyblockManager
 	public Set<Entry<Integer, Island>> getTopScores()
 	{
 		return Collections.unmodifiableSet(mTopIslands.entries());
+	}
+	
+	void removeIsland(Island island)
+	{
+		Integer score = mTopReverse.remove(island);
+		if (score != null)
+			mTopIslands.remove(score, island);
 	}
 	
 	public int getIslandChunkSize()

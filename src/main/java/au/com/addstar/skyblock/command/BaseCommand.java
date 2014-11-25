@@ -2,6 +2,7 @@ package au.com.addstar.skyblock.command;
 
 import au.com.addstar.monolith.command.RootCommandDispatcher;
 import au.com.addstar.skyblock.SkyblockManager;
+import au.com.addstar.skyblock.command.admin.AdminBaseCommand;
 
 public class BaseCommand extends RootCommandDispatcher
 {
@@ -25,5 +26,6 @@ public class BaseCommand extends RootCommandDispatcher
 		
 		// Admin commands
 		registerCommand(new TemplateCommand(manager));
+		registerCommand(new AdminBaseCommand(manager));
 	}
 }

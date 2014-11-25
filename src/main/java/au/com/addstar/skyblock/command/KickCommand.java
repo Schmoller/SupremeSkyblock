@@ -3,7 +3,6 @@ package au.com.addstar.skyblock.command;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -94,11 +93,7 @@ public class KickCommand implements ICommand
 			if (mManager.getIslandAt(otherPlayer.getLocation()) == island)
 			{
 				// They are on this island
-				Island theirIsland = mManager.getIsland(other.getUniqueId());
-				if (theirIsland != null)
-					otherPlayer.teleport(theirIsland.getIslandSpawn());
-				else
-					otherPlayer.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+				Utilities.sendPlayerHome(otherPlayer);
 				
 				otherPlayer.sendMessage(Utilities.format("&6[Skyblock] &cYou have been moved off %s's island", player.getDisplayName()));
 				player.sendMessage(Utilities.format("&6[Skyblock] &c%s has been moved off your island", otherPlayer.getDisplayName()));

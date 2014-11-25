@@ -30,6 +30,7 @@ import com.google.common.collect.SetMultimap;
 import au.com.addstar.skyblock.island.Coord;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.island.IslandTemplate;
+import au.com.addstar.skyblock.misc.Utilities;
 
 public class SkyblockWorld
 {
@@ -93,6 +94,21 @@ public class SkyblockWorld
 		return island;
 	}
 	
+	public void removeIsland(Island island)
+	{
+		mManager.removeIsland(island);
+		for (UUID member : island.getMembers())
+			mOwnerMap.remove(member, island);
+		mOwnerMap.remove(island.getOwner(), island);
+		mGrid.remove(island);
+		mManager.removeIsland(island);
+		
+		for (Player player : Utilities.getPlayersOnIsland(island))
+			Utilities.sendPlayerHome(player);
+		
+		island.clear();
+	}
+	
 	public void updateIslandMembership(Island island, UUID player)
 	{
 		if (island.getMembers().contains(player))
@@ -141,7 +157,8 @@ public class SkyblockWorld
 		if (!island.getMembers().contains(oldOwner))
 			mOwnerMap.remove(oldOwner, island);
 		
-		mOwnerMap.put(island.getOwner(), island);
+		if (!island.getOwner().equals(Utilities.nobody))
+			mOwnerMap.put(island.getOwner(), island);
 	}
 	
 	public boolean load()
@@ -218,9 +235,15 @@ public class SkyblockWorld
 			}
 			
 			Island island = new Island(owner, members, coords, this);
-			mOwnerMap.put(owner, island);
-			for (UUID member : members)
-				mOwnerMap.put(member, island);
+			
+			if (owner.equals(Utilities.nobody))
+				mManager.queueAbandoned(island);
+			else
+			{
+				mOwnerMap.put(owner, island);
+				for (UUID member : members)
+					mOwnerMap.put(member, island);
+			}
 			
 			mGrid.set(island);
 		}

@@ -7,6 +7,9 @@ general:
   score-sweep-delay: 2m
   # The maximum time in milliseconds that can be spent each tick calculating the score of an island
   score-calc-time-limit: 10
+  
+  # The time between removing abandoned islands.
+  abandon-sweep-delay: 2m
 
 player:
   # When true, the players own island does not count towards the max-membership count 

@@ -275,11 +275,14 @@ public class Island
 	
 	public void abandonIsland()
 	{
+		UUID oldOwner = mOwner;
 		mOwner = Utilities.nobody;
 		mOwnerName = "Unowned";
 		mMembers.clear();
 		
-		// TODO: Mark island for deleting
+		mWorld.updateOwner(this, oldOwner);
+		
+		mWorld.getManager().queueAbandoned(this);
 		mIsModified = true;
 	}
 	
