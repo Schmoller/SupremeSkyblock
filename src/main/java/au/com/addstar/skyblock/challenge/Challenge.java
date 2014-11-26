@@ -55,9 +55,9 @@ public abstract class Challenge
 	 */
 	public abstract boolean isManual();
 	
-	protected abstract void addRequirementDescription(ImmutableList.Builder<String> builder, boolean completed);
+	protected abstract void addRequirementDescription(ImmutableList.Builder<String> builder, boolean completed, ChallengeStorage storage );
 	
-	private void checkCanComplete(ChallengeStorage storage)
+	protected void checkCanComplete(ChallengeStorage storage)
 	{
 		if (!storage.allComplete(mRequired))
 			throw new IllegalStateException("You have not completed the required challenges");
@@ -112,16 +112,25 @@ public abstract class Challenge
 			builder.add(Utilities.format("&7 - &7%s", reward.getName()));
 	}
 	
-	public final void addDescription(ImmutableList.Builder<String> builder, boolean completed)
+	public final void addDescription(ImmutableList.Builder<String> builder, ChallengeStorage storage)
 	{
+		boolean completed = storage.isComplete(this);
 		for(String string : mDescription)
 			builder.add(Utilities.format(" &7&o%s", string));
 		
 		if (mShowRequirements)
-			addRequirementDescription(builder, completed && !isRepeatable());
+			addRequirementDescription(builder, completed && !isRepeatable(), storage);
 		
 		if (!completed || isRepeatable())
+		{
 			addRewardDescription(builder, completed);
+			if (this instanceof ProgressionChallenge)
+			{
+				float progress = ((ProgressionChallenge)this).getProgress(storage);
+				if (progress > 0)
+					builder.add(Utilities.format(" &7You are %d%% towards completing this challenge", (int)(progress * 100)));
+			}
+		}
 		else
 			builder.add(Utilities.format(" &aYou have completed this challenge"));
 	}

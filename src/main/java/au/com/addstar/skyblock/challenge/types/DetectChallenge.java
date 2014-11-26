@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableList.Builder;
 
 import au.com.addstar.monolith.StringTranslator;
 import au.com.addstar.skyblock.challenge.Challenge;
+import au.com.addstar.skyblock.challenge.ChallengeStorage;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.misc.Utilities;
 
@@ -46,7 +47,7 @@ public class DetectChallenge extends Challenge
 	}
 	
 	@Override
-	protected void addRequirementDescription( Builder<String> builder, boolean completed )
+	protected void addRequirementDescription( Builder<String> builder, boolean completed, ChallengeStorage storage )
 	{
 		if (completed)
 			builder.add(Utilities.format(" The following items had to be present:"));

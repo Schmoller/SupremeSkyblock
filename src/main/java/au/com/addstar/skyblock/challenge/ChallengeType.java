@@ -3,13 +3,15 @@ package au.com.addstar.skyblock.challenge;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import au.com.addstar.skyblock.challenge.types.CraftChallenge;
 import au.com.addstar.skyblock.challenge.types.DetectChallenge;
 import au.com.addstar.skyblock.challenge.types.SubmitChallenge;
 
 public enum ChallengeType
 {
 	Submit("submit", SubmitChallenge.class),
-	Detect("detect", DetectChallenge.class);
+	Detect("detect", DetectChallenge.class),
+	Craft("craft", CraftChallenge.class);
 	
 	private String mName;
 	private Constructor<? extends Challenge> mNewChallenge;

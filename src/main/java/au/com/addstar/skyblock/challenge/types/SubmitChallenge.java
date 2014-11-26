@@ -7,6 +7,7 @@ import org.bukkit.inventory.PlayerInventory;
 import com.google.common.collect.ImmutableList.Builder;
 
 import au.com.addstar.monolith.StringTranslator;
+import au.com.addstar.skyblock.challenge.ChallengeStorage;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.misc.Utilities;
 
@@ -33,7 +34,7 @@ public class SubmitChallenge extends DetectChallenge
 	}
 	
 	@Override
-	protected void addRequirementDescription( Builder<String> builder, boolean completed )
+	protected void addRequirementDescription( Builder<String> builder, boolean completed, ChallengeStorage storage )
 	{
 		if (completed)
 			builder.add(Utilities.format(" The following items were required:"));

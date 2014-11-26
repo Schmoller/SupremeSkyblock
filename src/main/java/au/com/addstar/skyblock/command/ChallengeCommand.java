@@ -17,6 +17,7 @@ import au.com.addstar.monolith.command.CommandSenderType;
 import au.com.addstar.monolith.command.ICommand;
 import au.com.addstar.skyblock.SkyblockManager;
 import au.com.addstar.skyblock.challenge.Challenge;
+import au.com.addstar.skyblock.challenge.ProgressionChallenge;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.misc.Utilities;
 
@@ -92,10 +93,24 @@ public class ChallengeCommand implements ICommand
 					if (challenge == null)
 						throw new BadArgumentException(1, "Unknown challenge, use " + parent + label + " to see available challenges");
 					
-					challenge.complete(player, island.getChallengeStorage());
+					if (!challenge.isManual())
+						throw new BadArgumentException(1, "This challenge cannot be completed via this command. It requires an action elsewhere.");
+					
+					if (challenge instanceof ProgressionChallenge)
+					{
+						float progress = ((ProgressionChallenge) challenge).attemptComplete(player, island.getChallengeStorage());
+						if (progress >= 1)
+							sender.sendMessage(Utilities.format("&6[Skyblock] &aYou have completed the &e%s &achallenge!", challenge.getName()));
+						else
+							sender.sendMessage(Utilities.format("&6[Skyblock] &aYou have progressed with the &e%s&a challenge. It is now at &e%d%%&a!", challenge.getName(), (int)(progress * 100)));
+					}
+					else
+					{
+						challenge.complete(player, island.getChallengeStorage());
+						sender.sendMessage(Utilities.format("&6[Skyblock] &aYou have completed the &e%s &achallenge!", challenge.getName()));
+					}
 					
 					island.save();
-					sender.sendMessage(Utilities.format("&6[Skyblock] &aYou have completed the &e%s &achallenge!", challenge.getName()));
 				}
 				catch(IllegalStateException e)
 				{
@@ -119,7 +134,7 @@ public class ChallengeCommand implements ICommand
 				sender.sendMessage(Utilities.format("&6[Skyblock] &f%s challenge:", challenge.getName()));
 				
 				ImmutableList.Builder<String> description = ImmutableList.builder();
-				challenge.addDescription(description, island.getChallengeStorage().isComplete(challenge));
+				challenge.addDescription(description, island.getChallengeStorage());
 				
 				for (String line : description.build())
 					sender.sendMessage(line);
@@ -185,6 +200,13 @@ public class ChallengeCommand implements ICommand
 					if (builder.length() != 0)
 						builder.append(", ");
 					builder.append(challenge.getName());
+					
+					if (challenge instanceof ProgressionChallenge)
+					{
+						builder.append("(&a");
+						builder.append(String.format("%d%%", (int)(((ProgressionChallenge)challenge).getProgress(island.getChallengeStorage()) * 100)));
+						builder.append("&7)");
+					}
 				}
 				sender.sendMessage(Utilities.format("  &7%s", builder));
 			}

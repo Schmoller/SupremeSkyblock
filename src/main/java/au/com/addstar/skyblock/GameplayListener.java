@@ -8,11 +8,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import au.com.addstar.skyblock.challenge.Challenge;
+import au.com.addstar.skyblock.challenge.types.CraftChallenge;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.misc.Utilities;
 
@@ -147,6 +150,26 @@ public class GameplayListener implements Listener
 						}
 					}
 				}
+			}
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+	public void onCraft(CraftItemEvent event)
+	{
+		if (!(event.getWhoClicked() instanceof Player))
+			return;
+		
+		Player player = (Player)event.getWhoClicked();
+		Island island = mManager.getIslandAt(player.getLocation());
+		if (island == null || !island.canAssist(player))
+			return;
+		
+		for (Challenge challenge : mManager.getChallenges().getChallenges())
+		{
+			if (challenge instanceof CraftChallenge)
+			{
+				((CraftChallenge) challenge).onItemCraft(event.getCurrentItem(), player, island.getChallengeStorage());
 			}
 		}
 	}
