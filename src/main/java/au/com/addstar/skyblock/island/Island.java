@@ -82,12 +82,16 @@ public class Island
 	
 	public void setOwnerName(String name)
 	{
+		loadIfNeeded();
+		
 		mOwnerName = ChatColor.stripColor(name);
 		mIsModified = true;
 	}
 	
 	public void setOwner(Player player)
 	{
+		loadIfNeeded();
+		
 		UUID oldOwner = mOwner;
 		mOwner = player.getUniqueId();
 		mOwnerName = ChatColor.stripColor(player.getDisplayName());
@@ -98,6 +102,8 @@ public class Island
 	
 	public void setOwnerByMember(UUID member)
 	{
+		loadIfNeeded();
+		
 		String name = mMembers.get(member);
 		Validate.notNull(name, "That id does not refer to a member");
 		UUID oldOwner = mOwner;
@@ -139,6 +145,8 @@ public class Island
 	
 	public boolean canAssist(Player player)
 	{
+		loadIfNeeded();
+		
 		if (player.getUniqueId().equals(mOwner))
 			return true;
 		
@@ -174,6 +182,8 @@ public class Island
 	
 	public void setIslandSpawn(Location spawn)
 	{
+		loadIfNeeded();
+		
 		Validate.isTrue(spawn.getWorld().equals(mIslandOrigin.getWorld()));
 		mIslandSpawn = spawn;
 		
@@ -193,6 +203,8 @@ public class Island
 	
 	public void setScore(int score)
 	{
+		loadIfNeeded();
+		
 		mScore = score;
 		
 		mWorld.getManager().updateRank(this);
@@ -228,6 +240,8 @@ public class Island
 	
 	public void setLastUseTime(long time)
 	{
+		loadIfNeeded();
+		
 		mLastUseTime = time;
 		mIsModified = true;
 	}
@@ -240,6 +254,8 @@ public class Island
 	
 	public void addMember(OfflinePlayer player)
 	{
+		loadIfNeeded();
+		
 		String name;
 		if (player.isOnline())
 			name = ChatColor.stripColor(player.getPlayer().getDisplayName());
@@ -253,6 +269,8 @@ public class Island
 	
 	public boolean removeMember(OfflinePlayer player)
 	{
+		loadIfNeeded();
+		
 		if (mMembers.containsKey(player.getUniqueId()))
 		{
 			mMembers.remove(player.getUniqueId());
@@ -265,16 +283,22 @@ public class Island
 	
 	public Set<UUID> getMembers()
 	{
+		loadIfNeeded();
+		
 		return Collections.unmodifiableSet(mMembers.keySet());
 	}
 	
 	public String getMemberName(UUID member)
 	{
+		loadIfNeeded();
+		
 		return mMembers.get(member);
 	}
 	
 	public void setMemberName(UUID member, String name)
 	{
+		loadIfNeeded();
+		
 		if (mMembers.containsKey(member))
 		{
 			mMembers.put(member, ChatColor.stripColor(name));
