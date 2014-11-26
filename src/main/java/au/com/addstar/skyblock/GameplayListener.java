@@ -1,5 +1,6 @@
 package au.com.addstar.skyblock;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,12 +10,14 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import au.com.addstar.skyblock.challenge.Challenge;
+import au.com.addstar.skyblock.challenge.ChallengeStorage;
 import au.com.addstar.skyblock.challenge.types.CraftChallenge;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.misc.Utilities;
@@ -160,17 +163,56 @@ public class GameplayListener implements Listener
 		if (!(event.getWhoClicked() instanceof Player))
 			return;
 		
-		Player player = (Player)event.getWhoClicked();
-		Island island = mManager.getIslandAt(player.getLocation());
+		final Player player = (Player)event.getWhoClicked();
+		final Island island = mManager.getIslandAt(player.getLocation());
 		if (island == null || !island.canAssist(player))
 			return;
 		
+		if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY)
+		{
+			// Shift click, craft all possible
+			final ItemStack[] startInventory = Utilities.deepCopy(player.getInventory().getContents());
+			final ItemStack craftItem = event.getCurrentItem();
+			
+			Bukkit.getScheduler().runTaskLater(mManager.getPlugin(), new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					ItemStack[] endInventory = player.getInventory().getContents();
+					
+					int count = 0;
+					for (int i = 0; i < startInventory.length; i++)
+					{
+						ItemStack start = startInventory[i];
+						ItemStack end = endInventory[i];
+
+						if (start == null)
+						{
+							if (end != null && end.isSimilar(craftItem))
+								count += end.getAmount();
+						}
+						else if (start.isSimilar(end) && end.isSimilar(craftItem))
+							count += (end.getAmount() - start.getAmount());
+					}
+					
+					ItemStack result = craftItem.clone();
+					result.setAmount(count);
+					
+					recordCrafting(result, player, island.getChallengeStorage());
+				}
+			}, 1);
+		}
+		else if (event.getAction() == InventoryAction.PICKUP_ALL)
+			recordCrafting(event.getCurrentItem(), player, island.getChallengeStorage());
+	}
+	
+	private void recordCrafting(ItemStack item, Player player, ChallengeStorage storage)
+	{
 		for (Challenge challenge : mManager.getChallenges().getChallenges())
 		{
 			if (challenge instanceof CraftChallenge)
-			{
-				((CraftChallenge) challenge).onItemCraft(event.getCurrentItem(), player, island.getChallengeStorage());
-			}
+				((CraftChallenge) challenge).onItemCraft(item, player, storage);
 		}
 	}
 }

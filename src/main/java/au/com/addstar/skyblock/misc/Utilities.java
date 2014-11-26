@@ -1,6 +1,7 @@
 package au.com.addstar.skyblock.misc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -327,5 +328,19 @@ public class Utilities
 		
 		player.teleport(closest);
 		return true;
+	}
+	
+	public static ItemStack[] deepCopy(ItemStack[] array)
+	{
+		ItemStack[] copy = Arrays.copyOf(array, array.length);
+		for (int i = 0; i < copy.length; ++i)
+		{
+			if (copy[i] == null)
+				continue;
+			
+			copy[i] = copy[i].clone();
+		}
+		
+		return copy;
 	}
 }

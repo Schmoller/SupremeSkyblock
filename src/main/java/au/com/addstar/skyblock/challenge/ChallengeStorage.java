@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import au.com.addstar.skyblock.island.Island;
 
@@ -22,6 +23,7 @@ public class ChallengeStorage
 		mIsland = island;
 		mCompleted = new HashMap<Challenge, Long>();
 		mExtra = new HashMap<Challenge, ConfigurationSection>();
+		mExtraRoot = new YamlConfiguration();
 		mNeedsSaving = false;
 	}
 	
@@ -99,7 +101,6 @@ public class ChallengeStorage
 	public void load(ConfigurationSection source)
 	{
 		mCompleted.clear();
-		mExtraRoot = source.createSection("tmp");
 		
 		ConfigurationSection section = source.getConfigurationSection("challenges");
 		if (section == null)
