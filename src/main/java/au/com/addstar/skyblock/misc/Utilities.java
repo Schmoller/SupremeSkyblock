@@ -152,10 +152,11 @@ public class Utilities
 			StringBuilder builder = new StringBuilder();
 			for (String unit : mUnitNames)
 			{
-				builder.append("(?:([0-9]+)[");
+				builder.append("(?:([0-9]+)(?:");
 				builder.append(unit);
+				builder.append("|");
 				builder.append(unit.toUpperCase());
-				builder.append("])*");
+				builder.append("))*");
 			}
 			
 			mDiffPattern = Pattern.compile(builder.toString());

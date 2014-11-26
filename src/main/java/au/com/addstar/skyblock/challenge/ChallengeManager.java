@@ -49,6 +49,8 @@ public class ChallengeManager
 		if (!file.exists())
 			return;
 		
+		mLoadedChallenges.clear();
+		
 		mManager.getPlugin().getLogger().info("Loading challenges");
 		HashMultimap<Challenge, String> toMap = HashMultimap.create();
 		
