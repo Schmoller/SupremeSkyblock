@@ -130,6 +130,9 @@ public class Island
 				// FIXME: Entities do not visually remove
 				
 				mWorld.getWorld().regenerateChunk(x, z);
+				// Entities do not function after regenerating the chunk until it has been reloaded
+				mWorld.getWorld().unloadChunk(x, z, true, false);
+				mWorld.getWorld().loadChunk(x, z);
 			}
 		}
 		

@@ -2,19 +2,25 @@ package au.com.addstar.skyblock;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDispenseEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.material.Dispenser;
 
 import au.com.addstar.skyblock.challenge.Challenge;
 import au.com.addstar.skyblock.challenge.ChallengeStorage;
@@ -57,9 +63,58 @@ public class GameplayListener implements Listener
 		if (mManager.getSkyblockWorld(player.getWorld()) == null)
 			return;
 		
-		Island island = mManager.getIslandAt(event.getBlock().getLocation());
-		if (island != null)
-			island.markScoreDirty();
+		if (event.getBlock().getY() == 0)
+			event.setCancelled(true);
+		else
+		{
+			Island island = mManager.getIslandAt(event.getBlock().getLocation());
+			if (island != null)
+				island.markScoreDirty();
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
+	public void onBucketEmpty(PlayerBucketEmptyEvent event)
+	{
+		if (mManager.getSkyblockWorld(event.getBlockClicked().getWorld()) == null)
+			return;
+		
+		Block block = event.getBlockClicked().getRelative(event.getBlockFace());
+		if (block.getY() == 0)
+			event.setCancelled(true);
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
+	public void onPistonPush(BlockPistonExtendEvent event)
+	{
+		if (mManager.getSkyblockWorld(event.getBlock().getWorld()) == null)
+			return;
+		
+		if (event.getDirection() != BlockFace.DOWN)
+			return;
+		
+		for (Block block : event.getBlocks())
+		{
+			if (block.getY() <= 1)
+			{
+				event.setCancelled(true);
+				break;
+			}
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
+	public void onDispense(BlockDispenseEvent event)
+	{
+		if (mManager.getSkyblockWorld(event.getBlock().getWorld()) == null)
+			return;
+		
+		if (event.getBlock().getY() != 1)
+			return;
+		
+		Dispenser dispenser = (Dispenser)event.getBlock().getState().getData();
+		if (dispenser.getFacing() == BlockFace.DOWN && event.getItem().getType() == Material.WATER_BUCKET || event.getItem().getType() == Material.LAVA_BUCKET)
+			event.setCancelled(true);
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled = true)
