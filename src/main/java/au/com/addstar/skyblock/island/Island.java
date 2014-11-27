@@ -130,8 +130,6 @@ public class Island
 				// FIXME: Entities do not visually remove
 				
 				mWorld.getWorld().regenerateChunk(x, z);
-				
-				// FIXME: Empty chunks are not being sent correctly to the client. They appear as missing chunks causing several client issues
 			}
 		}
 		
