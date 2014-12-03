@@ -1,10 +1,13 @@
 package au.com.addstar.skyblock.misc;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -342,5 +345,17 @@ public class Utilities
 		}
 		
 		return copy;
+	}
+	
+	public static void close(Closeable closeable, Logger logger)
+	{
+		try
+		{
+			closeable.close();
+		}
+		catch(IOException e)
+		{
+			logger.log(Level.SEVERE, "", e);
+		}
 	}
 }

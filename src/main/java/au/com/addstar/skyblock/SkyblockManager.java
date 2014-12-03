@@ -23,7 +23,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import com.google.common.collect.TreeMultimap;
-import com.google.common.io.Closeables;
 
 import au.com.addstar.skyblock.challenge.ChallengeManager;
 import au.com.addstar.skyblock.island.Island;
@@ -246,7 +245,7 @@ public class SkyblockManager
 		}
 		finally
 		{
-			Closeables.closeQuietly(in);
+			Utilities.close(in, mPlugin.getLogger());
 		}
 	}
 	
@@ -282,7 +281,7 @@ public class SkyblockManager
 		}
 		finally
 		{
-			Closeables.closeQuietly(out);
+			Utilities.close(out, mPlugin.getLogger());
 		}
 	}
 	
