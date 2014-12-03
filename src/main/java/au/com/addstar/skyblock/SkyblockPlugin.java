@@ -5,6 +5,7 @@ import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import au.com.addstar.skyblock.command.BaseCommand;
+import au.com.addstar.skyblock.nether.NetherGameplayListener;
 
 public class SkyblockPlugin extends JavaPlugin
 {
@@ -33,6 +34,7 @@ public class SkyblockPlugin extends JavaPlugin
 		mManager.load();
 		Bukkit.getPluginManager().registerEvents(new ProtectionListener(mManager), this);
 		Bukkit.getPluginManager().registerEvents(new GameplayListener(mManager), this);
+		Bukkit.getPluginManager().registerEvents(new NetherGameplayListener(mManager), this);
 		
 		mManager.init();
 	}

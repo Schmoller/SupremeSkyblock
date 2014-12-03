@@ -50,6 +50,7 @@ public class SkyblockManager
 	// Config values
 	
 	private long mGeneralCleanupCutoff;
+	private boolean mGeneralUseNether;
 	
 	private int mIslandChunkSize;
 	private int mIslandHeight;
@@ -187,6 +188,8 @@ public class SkyblockManager
 		mSaver.runTaskTimer(mPlugin, saveInterval, saveInterval);
 		
 		mGeneralCleanupCutoff = Utilities.parseTimeDiffSafe(config.getString("general.cleanup-cutoff", "4mo"), TimeUnit.DAYS.toMillis(520), mPlugin.getLogger());
+		
+		mGeneralUseNether = config.getBoolean("general.use-nether", true);
 	}
 	
 	private IslandTemplate load(String name)
@@ -300,6 +303,28 @@ public class SkyblockManager
 	public SkyblockWorld getSkyblockWorld(World world)
 	{
 		return mWorlds.get(world);
+	}
+	
+	public SkyblockWorld getParentSkyblockWorld(World world)
+	{
+		String name;
+		switch(world.getEnvironment())
+		{
+		case NETHER:
+			name = world.getName().replace("_nether", "");
+			break;
+		case THE_END:
+			name = world.getName().replace("_the_end", "");
+			break;
+		default:
+			return null;
+		}
+		
+		World parent = Bukkit.getWorld(name);
+		if (parent != null)
+			return getSkyblockWorld(parent);
+		else
+			return null;
 	}
 	
 	public Island getIsland(UUID owner)
@@ -458,6 +483,11 @@ public class SkyblockManager
 	public long getCleanupCutoff()
 	{
 		return mGeneralCleanupCutoff;
+	}
+	
+	public boolean getUsesNether()
+	{
+		return mGeneralUseNether;
 	}
 	
 	public File getWorldFolder(String world)
