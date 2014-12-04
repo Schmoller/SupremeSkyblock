@@ -14,12 +14,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.BlockVector;
 
 import com.google.common.collect.Maps;
 
@@ -36,7 +39,7 @@ public class Island
 	
 	private final Coord mCoord;
 	private final SkyblockWorld mWorld;
-	private final Location mIslandOrigin;
+	private final BlockVector mIslandOrigin;
 	private Location mIslandSpawn;
 	private ChallengeStorage mChallenges;
 	private int mScore;
@@ -57,7 +60,7 @@ public class Island
 		Coord chunkMin = getChunkCoord();
 		int halfSize = (mWorld.getIslandChunkSize() * 16) / 2;
 		
-		mIslandOrigin = new Location(mWorld.getWorld(), chunkMin.getX() * 16 + halfSize, mWorld.getIslandHeight(), chunkMin.getZ() * 16 + halfSize);
+		mIslandOrigin = new BlockVector(chunkMin.getX() * 16 + halfSize, mWorld.getIslandHeight(), chunkMin.getZ() * 16 + halfSize);
 		
 		mMembers = Maps.newHashMap();
 		for(UUID id : members)
@@ -116,12 +119,22 @@ public class Island
 	
 	public void clear()
 	{
+		for (Environment environment : Environment.values())
+		{
+			if (mWorld.getWorld(environment) != null)
+				clear(environment);
+		}
+	}
+	
+	public void clear(Environment environment)
+	{
 		Coord min = getChunkCoord();
 		for (int x = min.getX(); x < min.getX() + mWorld.getIslandChunkSize(); ++x)
 		{
 			for (int z = min.getZ(); z < min.getZ() + mWorld.getIslandChunkSize(); ++z)
 			{
-				Chunk chunk = mWorld.getWorld().getChunkAt(x, z);
+				World world = mWorld.getWorld(environment);
+				Chunk chunk = world.getChunkAt(x, z);
 				for (Entity ent : chunk.getEntities())
 				{
 					if (!(ent instanceof HumanEntity))
@@ -129,10 +142,10 @@ public class Island
 				}
 				// FIXME: Entities do not visually remove
 				
-				mWorld.getWorld().regenerateChunk(x, z);
+				world.regenerateChunk(x, z);
 				// Entities do not function after regenerating the chunk until it has been reloaded
-				mWorld.getWorld().unloadChunk(x, z, true, false);
-				mWorld.getWorld().loadChunk(x, z);
+				world.unloadChunk(x, z, true, false);
+				world.loadChunk(x, z);
 			}
 		}
 		
@@ -141,7 +154,16 @@ public class Island
 	
 	public void placeIsland()
 	{
-		mWorld.getManager().getTemplate().placeAt(mIslandOrigin);
+		for (Environment environment : Environment.values())
+		{
+			if (mWorld.getWorld(environment) != null)
+				placeIsland(environment);
+		}
+	}
+	
+	public void placeIsland(Environment environment)
+	{
+		mWorld.getManager().getTemplate().placeAt(getIslandOrigin(environment));
 	}
 	
 	public boolean canAssist(Player player)
@@ -169,9 +191,9 @@ public class Island
 		return new Coord(mCoord.getX() * mWorld.getIslandChunkSize(), mCoord.getZ() * mWorld.getIslandChunkSize());
 	}
 	
-	public Location getIslandOrigin()
+	public Location getIslandOrigin(Environment environment)
 	{
-		return mIslandOrigin.clone();
+		return mIslandOrigin.toLocation(mWorld.getWorld(environment));
 	}
 	
 	public Location getIslandSpawn()
@@ -185,7 +207,7 @@ public class Island
 	{
 		loadIfNeeded();
 		
-		Validate.isTrue(spawn.getWorld().equals(mIslandOrigin.getWorld()));
+		Validate.isTrue(spawn.getWorld().equals(mWorld.getWorld(spawn.getWorld().getEnvironment())));
 		mIslandSpawn = spawn;
 		
 		mIsModified = true;
@@ -357,6 +379,7 @@ public class Island
 		if (mIslandSpawn != null)
 		{
 			ConfigurationSection spawn = dest.createSection("spawn");
+			spawn.set("env", mIslandSpawn.getWorld().getEnvironment().name());
 			spawn.set("x", mIslandSpawn.getX());
 			spawn.set("y", mIslandSpawn.getY());
 			spawn.set("z", mIslandSpawn.getZ());
@@ -420,7 +443,11 @@ public class Island
 		if (source.isConfigurationSection("spawn"))
 		{
 			ConfigurationSection spawn = source.getConfigurationSection("spawn");
-			mIslandSpawn = new Location(mWorld.getWorld(), spawn.getDouble("x"), spawn.getDouble("y"), spawn.getDouble("z"), (float)spawn.getDouble("yaw"), (float)spawn.getDouble("pitch"));
+			Environment environment = Environment.NORMAL;
+			if (spawn.contains("env"))
+				environment = Environment.valueOf(spawn.getString("env"));
+			
+			mIslandSpawn = new Location(mWorld.getWorld(environment), spawn.getDouble("x"), spawn.getDouble("y"), spawn.getDouble("z"), (float)spawn.getDouble("yaw"), (float)spawn.getDouble("pitch"));
 		}
 		
 		if (source.contains("owner-name"))

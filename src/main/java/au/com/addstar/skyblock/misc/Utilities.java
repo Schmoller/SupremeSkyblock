@@ -205,7 +205,7 @@ public class Utilities
 	{
 		Location temp = new Location(null, 0, 0, 0); 
 		ArrayList<Player> players = new ArrayList<Player>();
-		for (Player player : island.getWorld().getWorld().getPlayers())
+		for (Player player : Bukkit.getOnlinePlayers())
 		{
 			if (island.getWorld().getIslandAt(player.getLocation(temp)) == island)
 				players.add(player);

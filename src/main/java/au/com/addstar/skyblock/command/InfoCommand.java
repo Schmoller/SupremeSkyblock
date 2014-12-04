@@ -8,7 +8,9 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -104,7 +106,8 @@ public class InfoCommand implements ICommand
 		
 		sender.sendMessage(ChatColor.GOLD + "[Skyblock]" + ChatColor.WHITE + " Island info:");
 		sender.sendMessage(ChatColor.GRAY + " Owner:" + ChatColor.WHITE + " " + island.getOwnerName());
-		sender.sendMessage(ChatColor.GRAY + " Location:" + ChatColor.WHITE + String.format(" %d,%d,%d %s", island.getIslandOrigin().getBlockX(), island.getIslandOrigin().getBlockY(), island.getIslandOrigin().getBlockZ(), island.getIslandOrigin().getWorld().getName()));
+		Location origin = island.getIslandOrigin(Environment.NORMAL);
+		sender.sendMessage(ChatColor.GRAY + " Location:" + ChatColor.WHITE + String.format(" %d,%d,%d %s", origin.getBlockX(), origin.getBlockY(), origin.getBlockZ(), origin.getWorld().getName()));
 		int rank = island.getRank();
 		if (rank < 0)
 			sender.sendMessage(ChatColor.GRAY + " Rank:" + ChatColor.WHITE + " Unranked");

@@ -39,7 +39,7 @@ public class NetherGameplayListener implements Listener
 		if (!mManager.getUsesNether() || event.getPlayer().getWorld().getEnvironment() != Environment.NETHER)
 			return;
 		
-		SkyblockWorld world = mManager.getParentSkyblockWorld(event.getPlayer().getWorld());
+		SkyblockWorld world = mManager.getSkyblockWorld(event.getPlayer().getWorld());
 		if (world == null)
 			return;
 		
@@ -61,7 +61,7 @@ public class NetherGameplayListener implements Listener
 		if (!mManager.getUsesNether() || event.getPlayer().getWorld().getEnvironment() != Environment.NETHER)
 			return;
 		
-		SkyblockWorld world = mManager.getParentSkyblockWorld(event.getPlayer().getWorld());
+		SkyblockWorld world = mManager.getSkyblockWorld(event.getPlayer().getWorld());
 		if (world == null)
 			return;
 		
@@ -99,7 +99,7 @@ public class NetherGameplayListener implements Listener
 		if (!mManager.getUsesNether() || event.getBlock().getWorld().getEnvironment() != Environment.NETHER)
 			return;
 		
-		SkyblockWorld world = mManager.getParentSkyblockWorld(event.getBlock().getWorld());
+		SkyblockWorld world = mManager.getSkyblockWorld(event.getBlock().getWorld());
 		if (world == null)
 			return;
 		
@@ -119,7 +119,7 @@ public class NetherGameplayListener implements Listener
 		if (!mManager.getUsesNether() || event.getBlock().getWorld().getEnvironment() != Environment.NETHER)
 			return;
 		
-		SkyblockWorld world = mManager.getParentSkyblockWorld(event.getBlock().getWorld());
+		SkyblockWorld world = mManager.getSkyblockWorld(event.getBlock().getWorld());
 		if (world == null)
 			return;
 		

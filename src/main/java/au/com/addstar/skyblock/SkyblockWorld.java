@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -34,7 +34,8 @@ import au.com.addstar.skyblock.misc.Utilities;
 public class SkyblockWorld
 {
 	private String mName;
-	private World mWorld;
+	private World[] mWorlds;
+	
 	private SkyblockManager mManager;
 	private IslandGrid mGrid;
 	
@@ -52,6 +53,8 @@ public class SkyblockWorld
 		
 		mIslandChunkSize = manager.getIslandChunkSize();
 		mIslandHeight = manager.getIslandHeight();
+		
+		mWorlds = new World[Environment.values().length];
 	}
 	
 	public String getName()
@@ -59,9 +62,9 @@ public class SkyblockWorld
 		return mName;
 	}
 	
-	public World getWorld()
+	public World getWorld(Environment environment)
 	{
-		return mWorld;
+		return mWorlds[environment.ordinal()];
 	}
 	
 	public IslandGrid getGrid()
@@ -92,7 +95,7 @@ public class SkyblockWorld
 		IslandTemplate template = mManager.getTemplate();
 		
 		// Configure the island
-		island.setIslandSpawn(template.getSpawnLocation(island.getIslandOrigin()));
+		island.setIslandSpawn(template.getSpawnLocation(island.getIslandOrigin(Environment.NORMAL)));
 		island.setOwnerName(player.getDisplayName());
 		
 		// Place it
@@ -117,7 +120,7 @@ public class SkyblockWorld
 		
 		island.clear();
 		
-		File base = new File(mManager.getWorldFolder(mWorld.getName()), "islands");
+		File base = new File(mManager.getWorldFolder(mName), "islands");
 		File file = new File(base, String.format("%d,%d", island.getCoord().getX(), island.getCoord().getZ()));
 		if (file.exists())
 			file.delete();
@@ -153,7 +156,7 @@ public class SkyblockWorld
 	
 	public Island getIslandAt(Location location, boolean includeNeutralZone)
 	{
-		Validate.isTrue(location.getWorld().equals(mWorld));
+		Validate.isTrue(mManager.getSkyblockWorld(location.getWorld()) == this);
 		
 		// Chunk coords
 		int x = location.getBlockX() >> 4;
@@ -223,13 +226,24 @@ public class SkyblockWorld
 	
 	private void loadWorld()
 	{
-		mWorld = new WorldCreator(mName)
+		mWorlds[Environment.NORMAL.ordinal()] = new WorldCreator(mName)
 		.environment(Environment.NORMAL)
 		.generateStructures(false)
 		.generator(new EmptyGenerator())
 		.type(WorldType.FLAT)
 		.seed(0)
 		.createWorld();
+		
+		if (mManager.getUsesNether())
+		{
+			mWorlds[Environment.NETHER.ordinal()] = new WorldCreator(String.format("%s_nether", mName))
+			.environment(Environment.NETHER)
+			.generateStructures(false)
+			.generator(new NetherGenerator())
+			.type(WorldType.FLAT)
+			.seed(0)
+			.createWorld();
+		}
 	}
 	
 	private void loadIslands(File worldDir) throws IOException, InvalidConfigurationException

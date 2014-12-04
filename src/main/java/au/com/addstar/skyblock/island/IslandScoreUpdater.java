@@ -1,23 +1,30 @@
 package au.com.addstar.skyblock.island;
 
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.BlockVector;
+
+import com.google.common.collect.Iterators;
 
 import au.com.addstar.skyblock.PointLookup;
+import au.com.addstar.skyblock.SkyblockWorld;
 import au.com.addstar.skyblock.challenge.Challenge;
 
 public class IslandScoreUpdater extends BukkitRunnable
 {
-	private Location mMinBlock;
-	private Location mMaxBlock;
+	private BlockVector mMinBlock;
+	private BlockVector mMaxBlock;
 	private Island mIsland;
 	private long mMaxIterationTime;
 	
+	private Iterator<Environment> mEnvIterator;
+	private Environment mEnvCurrent;
 	private int mX;
 	private int mY;
 	private int mZ;
@@ -25,7 +32,7 @@ public class IslandScoreUpdater extends BukkitRunnable
 	private int mScore;
 	
 	private PointLookup mLookup;
-	private World mWorld;
+	private SkyblockWorld mWorld;
 	
 	private int[] mCounts = new int[Material.values().length];
 	
@@ -35,8 +42,8 @@ public class IslandScoreUpdater extends BukkitRunnable
 	{
 		mIsland = island;
 		
-		mMinBlock = new Location(island.getWorld().getWorld(), island.getChunkCoord().getX() * 16 + island.getWorld().getManager().getIslandNeutralSize(), 0, island.getChunkCoord().getZ() * 16 + island.getWorld().getManager().getIslandNeutralSize());
-		mMaxBlock = new Location(island.getWorld().getWorld(), (island.getChunkCoord().getX() + island.getWorld().getIslandChunkSize()) * 16 - island.getWorld().getManager().getIslandNeutralSize() - 1, island.getWorld().getWorld().getMaxHeight(), (island.getChunkCoord().getZ() + island.getWorld().getIslandChunkSize()) * 16 - island.getWorld().getManager().getIslandNeutralSize() - 1);
+		mMinBlock = new BlockVector(island.getChunkCoord().getX() * 16 + island.getWorld().getManager().getIslandNeutralSize(), 0, island.getChunkCoord().getZ() * 16 + island.getWorld().getManager().getIslandNeutralSize());
+		mMaxBlock = new BlockVector((island.getChunkCoord().getX() + island.getWorld().getIslandChunkSize()) * 16 - island.getWorld().getManager().getIslandNeutralSize() - 1, 255, (island.getChunkCoord().getZ() + island.getWorld().getIslandChunkSize()) * 16 - island.getWorld().getManager().getIslandNeutralSize() - 1);
 		
 		mMaxIterationTime = TimeUnit.NANOSECONDS.convert(timeLimit, TimeUnit.MILLISECONDS);
 		
@@ -44,8 +51,11 @@ public class IslandScoreUpdater extends BukkitRunnable
 		mY = mMinBlock.getBlockY();
 		mZ = mMinBlock.getBlockZ();
 		
-		mWorld = mMinBlock.getWorld();
+		mEnvIterator = Iterators.forArray(Environment.values());
+		mEnvCurrent = mEnvIterator.next();
+		
 		mLookup = mIsland.getWorld().getManager().getPointLookup();
+		mWorld = mIsland.getWorld();
 		
 		mScore = 0;
 		
@@ -62,6 +72,26 @@ public class IslandScoreUpdater extends BukkitRunnable
 		{
 			if(System.nanoTime() - time >= mMaxIterationTime)
 				return;
+			
+			World world = null;
+			
+			if (mEnvCurrent != null)
+				world = mWorld.getWorld(mEnvCurrent);
+			
+			if (world == null)
+			{
+				if (mEnvIterator.hasNext())
+				{
+					mEnvCurrent = mEnvIterator.next();
+					mX = mMinBlock.getBlockX() - 1;
+					mY = mMinBlock.getBlockY();
+					mZ = mMinBlock.getBlockZ();
+					continue;
+				}
+				else
+					// Iteration is done
+					break;
+			}
 		
 			// Manual iteration
 			if (mX < mMaxBlock.getBlockX())
@@ -77,12 +107,15 @@ public class IslandScoreUpdater extends BukkitRunnable
 					if (mY < mMaxBlock.getBlockY())
 						++mY;
 					else
-						break;
+					{
+						mEnvCurrent = null;
+						continue; // Do next world iteration
+					}
 				}
 			}
 			
 			// Calculate score
-			Block block = mWorld.getBlockAt(mX, mY, mZ);
+			Block block = world.getBlockAt(mX, mY, mZ);
 			if (block.isEmpty())
 				continue;
 			

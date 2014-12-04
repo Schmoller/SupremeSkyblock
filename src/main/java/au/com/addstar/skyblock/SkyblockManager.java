@@ -18,6 +18,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.google.common.collect.Ordering;
@@ -140,7 +141,13 @@ public class SkyblockManager
 			SkyblockWorld world = new SkyblockWorld(name, this);
 			
 			if (world.load())
-				mWorlds.put(world.getWorld(), world);
+			{
+				for (Environment env : Environment.values())
+				{
+					if (world.getWorld(env) != null)
+						mWorlds.put(world.getWorld(env), world);
+				}
+			}
 		}
 	}
 	
@@ -303,28 +310,6 @@ public class SkyblockManager
 	public SkyblockWorld getSkyblockWorld(World world)
 	{
 		return mWorlds.get(world);
-	}
-	
-	public SkyblockWorld getParentSkyblockWorld(World world)
-	{
-		String name;
-		switch(world.getEnvironment())
-		{
-		case NETHER:
-			name = world.getName().replace("_nether", "");
-			break;
-		case THE_END:
-			name = world.getName().replace("_the_end", "");
-			break;
-		default:
-			return null;
-		}
-		
-		World parent = Bukkit.getWorld(name);
-		if (parent != null)
-			return getSkyblockWorld(parent);
-		else
-			return null;
 	}
 	
 	public Island getIsland(UUID owner)
