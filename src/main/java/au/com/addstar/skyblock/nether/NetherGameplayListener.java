@@ -1,6 +1,8 @@
 package au.com.addstar.skyblock.nether;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,12 +12,17 @@ import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Skeleton.SkeletonType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
@@ -28,6 +35,7 @@ import au.com.addstar.skyblock.island.Island;
 
 public class NetherGameplayListener implements Listener
 {
+	private final Random mRand = new Random();
 	private final String mHotWaterBucketName = ChatColor.WHITE + "Hot Water Bucket";
 	private SkyblockManager mManager;
 	
@@ -173,6 +181,73 @@ public class NetherGameplayListener implements Listener
 			event.setTo(new Location(world.getWorld(Environment.NORMAL), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ()));
 		
 		event.useTravelAgent(true);
+	}
+	
+	@EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=true)
+	public void onEntitySpawn(CreatureSpawnEvent event)
+	{
+		if (!mManager.getUsesNether() || event.getLocation().getWorld().getEnvironment() != Environment.NETHER)
+			return;
+		
+		SkyblockWorld world = mManager.getSkyblockWorld(event.getLocation().getWorld());
+		if (world == null)
+			return;
+		
+		// Blaze, wither skeletons, and skeletons do not spawn in our nether as there are no nether fortresses. Allow them to spawn if certain conditions are met
+		
+		// Zombie pigmen are so common, so we will replace these sometimes
+		if (event.getEntityType() != EntityType.PIG_ZOMBIE)
+			return;
+		
+		
+		Block block = event.getEntity().getLocation().getBlock().getRelative(BlockFace.DOWN);
+		if (block.getType() == Material.NETHER_BRICK && block.getRelative(BlockFace.UP).getType().isTransparent() && block.getRelative(BlockFace.UP, 2).getType().isTransparent())
+		{
+			int level = block.getRelative(BlockFace.UP).getLightLevel();
+			boolean canWither = block.getRelative(BlockFace.UP, 3).getType().isTransparent();
+				
+			if (mRand.nextDouble() < 0.14) // Something spawn chance
+			{
+				ArrayList<EntityType> valid = new ArrayList<EntityType>();
+				
+				if (level < 12)
+				{
+					for (int i = 0; i < 7; ++i)
+						valid.add(EntityType.BLAZE);
+				}
+				if (level < 6)
+				{
+					for (int i = 0; i < 4; ++i)
+					valid.add(EntityType.SKELETON);
+					if (canWither)
+						valid.add(EntityType.WITHER); // This will be replaced with a wither skeleton later
+				}
+				
+				event.setCancelled(true);
+				
+				EntityType type = valid.get(mRand.nextInt(valid.size()));
+				Entity entity;
+				switch(type)
+				{
+				case WITHER:
+				{
+					entity = event.getLocation().getWorld().spawn(event.getLocation(), Skeleton.class);
+					((Skeleton)entity).setSkeletonType(SkeletonType.WITHER);
+					break;
+				}
+				case SKELETON:
+				{
+					entity = event.getLocation().getWorld().spawn(event.getLocation(), Skeleton.class);
+					((Skeleton)entity).setSkeletonType(SkeletonType.NORMAL);
+					break;
+				}
+				default:
+					entity = event.getLocation().getWorld().spawnEntity(event.getLocation(), type);
+					break;
+				}
+			}
+					
+		}
 	}
 	
 	private static class PlaceChecker implements Runnable
