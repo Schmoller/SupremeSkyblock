@@ -92,7 +92,7 @@ public class SkyblockWorld
 		mGrid.set(island);
 		mOwnerMap.put(player.getUniqueId(), island);
 
-		IslandTemplate template = mManager.getTemplate();
+		IslandTemplate template = mManager.getTemplate(Environment.NORMAL);
 		
 		// Configure the island
 		island.setIslandSpawn(template.getSpawnLocation(island.getIslandOrigin(Environment.NORMAL)));

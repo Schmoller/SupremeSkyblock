@@ -163,7 +163,7 @@ public class Island
 	
 	public void placeIsland(Environment environment)
 	{
-		mWorld.getManager().getTemplate().placeAt(getIslandOrigin(environment));
+		mWorld.getManager().getTemplate(environment).placeAt(getIslandOrigin(environment));
 	}
 	
 	public boolean canAssist(Player player)

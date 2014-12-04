@@ -55,7 +55,7 @@ public class SkyblockManager
 	
 	private int mIslandChunkSize;
 	private int mIslandHeight;
-	private IslandTemplate mTemplate;
+	private IslandTemplate[] mTemplate;
 	private long mIslandRestartCooldown;
 	private int mIslandMaxMembers;
 	private int mIslandNeutralSize;
@@ -77,6 +77,8 @@ public class SkyblockManager
 		
 		mScoreUpdater = new ScoreUpdateSweep(plugin);
 		mAbandonSweep = new AbandonedIslandSweep(plugin);
+		
+		mTemplate = new IslandTemplate[Environment.values().length];
 	}
 	
 	public void init()
@@ -163,8 +165,6 @@ public class SkyblockManager
 		if (mIslandHeight < 10)
 			mIslandHeight = 190;
 		
-		String templateName = island.getString("template", "original");
-		
 		mIslandRestartCooldown = Utilities.parseTimeDiffSafe(island.getString("restart-cooldown", "1d"), TimeUnit.DAYS.toMillis(1), mPlugin.getLogger());
 		
 		mIslandMaxMembers = island.getInt("max-members", -1);
@@ -172,7 +172,8 @@ public class SkyblockManager
 		if (mIslandNeutralSize < 0)
 			mIslandNeutralSize = 4;
 		
-		mTemplate = load(templateName);
+		mTemplate[Environment.NORMAL.ordinal()] = load(island.getString("template", "original"));
+		mTemplate[Environment.NETHER.ordinal()] = load(island.getString("template-nether", "original_nether"));
 		
 		// Load player options
 		ConfigurationSection player = config.getConfigurationSection("player");
@@ -430,9 +431,9 @@ public class SkyblockManager
 		return mIslandRestartCooldown;
 	}
 	
-	public IslandTemplate getTemplate()
+	public IslandTemplate getTemplate(Environment environment)
 	{
-		return mTemplate;
+		return mTemplate[environment.ordinal()];
 	}
 	
 	public int getIslandMaxMembers()

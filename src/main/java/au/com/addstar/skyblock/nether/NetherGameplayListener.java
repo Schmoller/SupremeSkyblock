@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
@@ -17,11 +18,13 @@ import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import au.com.addstar.skyblock.SkyblockManager;
 import au.com.addstar.skyblock.SkyblockWorld;
+import au.com.addstar.skyblock.island.Island;
 
 public class NetherGameplayListener implements Listener
 {
@@ -146,6 +149,30 @@ public class NetherGameplayListener implements Listener
 		}
 		
 		return false;
+	}
+	
+	@EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
+	public void onPortalUse(PlayerPortalEvent event)
+	{
+		Player player = event.getPlayer();
+		if (!mManager.getUsesNether())
+			return;
+		
+		SkyblockWorld world = mManager.getSkyblockWorld(player.getWorld());
+		if (world == null)
+			return;
+		
+		Island island = mManager.getIslandAt(event.getFrom(), true);
+		
+		if (island != null)
+			event.setPortalTravelAgent(new PortalTravelAgent(event.getPortalTravelAgent(), island));
+		
+		if (event.getFrom().getWorld().getEnvironment() == Environment.NORMAL)
+			event.setTo(new Location(world.getWorld(Environment.NETHER), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ()));
+		else
+			event.setTo(new Location(world.getWorld(Environment.NORMAL), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ()));
+		
+		event.useTravelAgent(true);
 	}
 	
 	private static class PlaceChecker implements Runnable
