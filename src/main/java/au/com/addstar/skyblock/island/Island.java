@@ -36,6 +36,7 @@ public class Island
 	private String mOwnerName;
 	
 	private Map<UUID, String> mMembers;
+	private Map<UUID, PlayerSettings> mPlayerSettings;
 	
 	private final Coord mCoord;
 	private final SkyblockWorld mWorld;
@@ -65,6 +66,8 @@ public class Island
 		mMembers = Maps.newHashMap();
 		for(UUID id : members)
 			mMembers.put(id, null);
+		
+		mPlayerSettings = Maps.newHashMap();
 		
 		mChallenges = new ChallengeStorage(this);
 		
@@ -297,6 +300,7 @@ public class Island
 		if (mMembers.containsKey(player.getUniqueId()))
 		{
 			mMembers.remove(player.getUniqueId());
+			mPlayerSettings.remove(player.getUniqueId());
 			mWorld.updateIslandMembership(this, player.getUniqueId());
 			mIsModified = true;
 			return true;
@@ -329,6 +333,16 @@ public class Island
 		}
 	}
 	
+	public PlayerSettings getSettings(UUID player)
+	{
+		loadIfNeeded();
+		
+		if (!mPlayerSettings.containsKey(player))
+			return new PlayerSettings(player, false);
+		else
+			return mPlayerSettings.get(player);
+	}
+	
 	public void abandonIsland()
 	{
 		mWorld.getManager().getPlugin().getLogger().info(String.format("Abandoning island %s (%s)", mCoord, mOwnerName));
@@ -336,6 +350,7 @@ public class Island
 		mOwner = Utilities.nobody;
 		mOwnerName = "Unowned";
 		mMembers.clear();
+		mPlayerSettings.clear();
 		
 		mWorld.updateOwner(this, oldOwner);
 		
@@ -397,6 +412,10 @@ public class Island
 		ConfigurationSection members = dest.createSection("members");
 		for (Entry<UUID, String> member : mMembers.entrySet())
 			members.set(member.getKey().toString(), member.getValue());
+		
+		ConfigurationSection memberSettings = dest.createSection("member-settings");
+		for (PlayerSettings settings : mPlayerSettings.values())
+			settings.save(memberSettings.createSection(settings.mPlayer.toString()));
 		
 		mChallenges.save(dest);
 	}
@@ -467,6 +486,81 @@ public class Island
 			}
 		}
 		
+		if (source.isConfigurationSection("member-settings"))
+		{
+			ConfigurationSection memberSettings = source.getConfigurationSection("member-settings");
+			for (String key : memberSettings.getKeys(false))
+			{
+				UUID id = UUID.fromString(key);
+				PlayerSettings settings = new PlayerSettings(id, true);
+				settings.load(memberSettings.getConfigurationSection(key));
+				mPlayerSettings.put(id, settings);
+			}
+		}
+		
 		mChallenges.load(source);
+	}
+	
+	public class PlayerSettings
+	{
+		private final UUID mPlayer;
+		private Location mHome;
+		private boolean mAdded;
+		
+		protected PlayerSettings(UUID player, boolean added)
+		{
+			mPlayer = player;
+			mAdded = added;
+		}
+		
+		private void addIfNeeded()
+		{
+			if (!mAdded)
+			{
+				mPlayerSettings.put(mPlayer, this);
+				mAdded = true;
+			}
+		}
+		
+		public UUID getPlayer()
+		{
+			return mPlayer;
+		}
+		
+		public Location getHome()
+		{
+			return mHome;
+		}
+		
+		public void setHome(Location location)
+		{
+			mHome = location;
+			addIfNeeded();
+			mIsModified = true;
+		}
+		
+		protected void load(ConfigurationSection section)
+		{
+			if (section.isConfigurationSection("home"))
+			{
+				ConfigurationSection sub = section.getConfigurationSection("home");
+				Environment environment = Environment.valueOf(sub.getString("env", "NORMAL"));
+				mHome = new Location(mWorld.getWorld(environment), sub.getDouble("x", 0), sub.getDouble("y", 0), sub.getDouble("z", 0), (float)sub.getDouble("yaw", 0), (float)sub.getDouble("pitch", 0));
+			}
+		}
+		
+		protected void save(ConfigurationSection section)
+		{
+			if (mHome != null)
+			{
+				ConfigurationSection sub = section.createSection("home");
+				sub.set("env", mHome.getWorld().getEnvironment().name());
+				sub.set("x", mHome.getX());
+				sub.set("y", mHome.getY());
+				sub.set("z", mHome.getZ());
+				sub.set("yaw", mHome.getYaw());
+				sub.set("pitch", mHome.getPitch());
+			}
+		}
 	}
 }

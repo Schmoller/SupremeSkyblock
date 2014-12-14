@@ -70,10 +70,12 @@ public class DefaultCommand implements ICommand
 		// Go to the existing island
 		if (existing != null)
 		{
-			Location spawn = existing.getIslandSpawn();
+			Location location = existing.getSettings(player.getUniqueId()).getHome();
+			if (location == null)
+				location = existing.getIslandSpawn();
 			
 			Utilities.updateNames(player, existing);
-			Utilities.safeTeleport(player, spawn);
+			Utilities.safeTeleport(player, location);
 			player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6[Skyblock] &fYou have been teleported to your skyblock island"));
 		}
 		// Create a new island

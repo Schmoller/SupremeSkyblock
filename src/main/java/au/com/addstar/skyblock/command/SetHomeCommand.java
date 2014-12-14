@@ -3,8 +3,6 @@ package au.com.addstar.skyblock.command;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,11 +13,11 @@ import au.com.addstar.skyblock.SkyblockManager;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.misc.Utilities;
 
-public class HomeCommand implements ICommand
+public class SetHomeCommand implements ICommand
 {
 	private SkyblockManager mManager;
 	
-	public HomeCommand(SkyblockManager manager)
+	public SetHomeCommand(SkyblockManager manager)
 	{
 		mManager = manager;
 	}
@@ -27,31 +25,31 @@ public class HomeCommand implements ICommand
 	@Override
 	public String getName()
 	{
-		return "home";
+		return "sethome";
 	}
 
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] {"h"};
+		return null;
 	}
 
 	@Override
 	public String getPermission()
 	{
-		return "skyblock.command.home";
+		return "skyblock.command.sethome";
 	}
 
 	@Override
 	public String getUsageString( String label, CommandSender sender )
 	{
-		return label + " [<island>]";
+		return label;
 	}
 
 	@Override
 	public String getDescription()
 	{
-		return "Teleports to your island, or one of the islands you are a member of";
+		return "Sets your home point for the island you are on.";
 	}
 
 	@Override
@@ -60,6 +58,7 @@ public class HomeCommand implements ICommand
 		return EnumSet.of(CommandSenderType.Player);
 	}
 
+	@SuppressWarnings( "deprecation" )
 	@Override
 	public boolean onCommand( CommandSender sender, String parent, String label, String[] args ) throws BadArgumentException
 	{
@@ -68,38 +67,24 @@ public class HomeCommand implements ICommand
 		
 		Player player = (Player)sender;
 		
-		Island island;
-		if (args.length == 1)
-		{
-			OfflinePlayer other = Utilities.getPlayer(args[0]);
-			if (other == null)
-				throw new BadArgumentException(0, "Unknown player");
-			
-			island = mManager.getIsland(other.getUniqueId());
-			
-			if (island == null)
-				throw new IllegalArgumentException("That player doesnt have an island");
-		}
-		else
-		{
-			island = mManager.getIsland(player.getUniqueId());
-			if (island == null)
-				throw new IllegalArgumentException("You don't have an island. Use '" + parent + "' to create one");
-		}
+		Island island = mManager.getIslandAt(player.getLocation());
+		
+		if (island == null)
+			throw new IllegalArgumentException("You are not standing on an island");
 		
 		if (!island.canAssist(player))
-			throw new IllegalArgumentException("You do not own, and are not a member of that island");
+			throw new IllegalArgumentException("You are not a member of this island");
 		
-		Location location = island.getSettings(player.getUniqueId()).getHome();
-		if (location == null)
-			location = island.getIslandSpawn();
+		if (!player.isOnGround())
+			throw new IllegalArgumentException("You are not standing on the ground");
 		
-		Utilities.safeTeleport(player, location);
-		Utilities.updateNames(player, island);
+		island.getSettings(player.getUniqueId()).setHome(player.getLocation());
+		island.save();
+		
 		if (island.getOwner().equals(player.getUniqueId()))
-			player.sendMessage(Utilities.format("&6[Skyblock] &aYou have been teleported to your island"));
+			player.sendMessage(Utilities.format("&6[Skyblock] &aYou have set your home point. Use &e%shome&a to get here.", parent));
 		else
-			player.sendMessage(Utilities.format("&6[Skyblock] &aYou have been teleported to %s's island", island.getOwnerName()));
+			player.sendMessage(Utilities.format("&6[Skyblock] &aYou have set your home point on %1$s's island. Use &e%2$shome %1$s&a to get here.", island.getOwnerName(), parent));
 		
 		return true;
 	}
