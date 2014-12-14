@@ -44,6 +44,7 @@ public class Island
 	private Location mIslandSpawn;
 	private ChallengeStorage mChallenges;
 	private int mScore;
+	private boolean mAllowWarps;
 	
 	private long mIslandStartTime;
 	private long mLastUseTime;
@@ -72,6 +73,7 @@ public class Island
 		mChallenges = new ChallengeStorage(this);
 		
 		mIslandStartTime = mLastUseTime = System.currentTimeMillis();
+		mAllowWarps = true;
 	}
 	
 	public UUID getOwner()
@@ -358,6 +360,19 @@ public class Island
 		mIsModified = true;
 	}
 	
+	public boolean getWarpAllowed()
+	{
+		loadIfNeeded();
+		return mAllowWarps;
+	}
+	
+	public void setWarpAllowed(boolean value)
+	{
+		loadIfNeeded();
+		mAllowWarps = value;
+		mIsModified = true;
+	}
+	
 	public void saveIfNeeded()
 	{
 		if (mIsModified || mChallenges.needsSaving())
@@ -408,6 +423,7 @@ public class Island
 		dest.set("score", mScore);
 		dest.set("start-time", mIslandStartTime);
 		dest.set("use-date", mLastUseTime);
+		dest.set("allow-warp", mAllowWarps);
 		
 		ConfigurationSection members = dest.createSection("members");
 		for (Entry<UUID, String> member : mMembers.entrySet())
@@ -475,6 +491,7 @@ public class Island
 		mScore = source.getInt("score", 0);
 		mIslandStartTime = source.getLong("start-time", System.currentTimeMillis());
 		mLastUseTime = source.getLong("use-time", System.currentTimeMillis());
+		mAllowWarps = source.getBoolean("allow-warp", true);
 		
 		if (source.isConfigurationSection("members"))
 		{
