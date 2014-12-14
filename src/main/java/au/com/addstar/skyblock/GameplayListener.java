@@ -15,6 +15,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -30,6 +31,7 @@ import org.bukkit.material.Dispenser;
 import au.com.addstar.skyblock.challenge.Challenge;
 import au.com.addstar.skyblock.challenge.ChallengeStorage;
 import au.com.addstar.skyblock.challenge.types.CraftChallenge;
+import au.com.addstar.skyblock.challenge.types.MobKillChallenge;
 import au.com.addstar.skyblock.island.Island;
 import au.com.addstar.skyblock.misc.Utilities;
 
@@ -275,6 +277,27 @@ public class GameplayListener implements Listener
 		{
 			if (challenge instanceof CraftChallenge)
 				((CraftChallenge) challenge).onItemCraft(item, player, storage);
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+	public void onEntityKill(EntityDeathEvent event)
+	{
+		if (event.getEntity().getKiller() == null)
+			return;
+		
+		Player player = event.getEntity().getKiller();
+		
+		Island island = mManager.getIslandAt(event.getEntity().getLocation());
+		if (island == null || !island.canAssist(player))
+			return;
+		
+		ChallengeStorage storage = island.getChallengeStorage();
+		
+		for (Challenge challenge : mManager.getChallenges().getChallenges())
+		{
+			if (challenge instanceof MobKillChallenge)
+				((MobKillChallenge) challenge).onEntityKill(event.getEntity(), player, storage);
 		}
 	}
 	
