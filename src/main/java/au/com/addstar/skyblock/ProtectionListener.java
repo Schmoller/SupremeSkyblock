@@ -35,7 +35,7 @@ public class ProtectionListener implements Listener
 	
 	private boolean hasBypass(Player player)
 	{
-		return player.hasPermission("skyblock.protection.bypass");
+		return player.hasPermission("skyblock.bypass.protection");
 	}
 	
 	private void notify(Player player)

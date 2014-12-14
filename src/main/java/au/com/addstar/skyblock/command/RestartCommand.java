@@ -104,7 +104,7 @@ public class RestartCommand implements ICommand
 		// Check for cooldown
 		if (System.currentTimeMillis() - island.getStartTime() < mManager.getIslandRestartCooldown())
 		{
-			if (!sender.hasPermission("skyblock.cooldown.bypass"))
+			if (!sender.hasPermission("skyblock.bypass.cooldown"))
 			{
 				String diff = DurationFormatUtils.formatDurationWords(island.getStartTime() + mManager.getIslandRestartCooldown() - System.currentTimeMillis(), true, false);
 				sender.sendMessage(Utilities.format("&6[Skyblock] &cYou need to wait %s before this island can be restarted", diff));

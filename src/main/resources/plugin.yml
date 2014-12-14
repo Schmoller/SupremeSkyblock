@@ -17,44 +17,83 @@ commands:
 permissions:
 # User commands
   skyblock.commands.skyblock:
-    default: true
+    default: false
   skyblock.commands.restart:
-    default: true
+    default: false
   skyblock.commands.info:
-    default: true
+    default: false
   skyblock.command.challenge:
-    default: true
+    default: false
   skyblock.command.rank:
-    default: true
+    default: false
   skyblock.command.invite:
-    default: true
+    default: false
   skyblock.command.kick:
-    default: true
+    default: false
   skyblock.command.leave:
-    default: true
+    default: false
   skyblock.command.home:
-    default: true
+    default: false
   skyblock.command.transfer:
-    default: true
+    default: false
+  skyblock.command.sethome:
+    default: false
+  skyblock.command.warp:
+    default: false
+  skyblock.command.togglewarp:
+    default: false
 # Admin commands
   skyblock.command.admin:
-    default: op
+    default: false
   skyblock.commands.template:
-    default: op
+    default: false
   skyblock.commands.info.others:
-    default: op
+    default: false
     children:
       skyblock.commands.info: true
   skyblock.commands.restart.others:
-    default: op
+    default: false
     children:
       skyblock.commands.restart: true
   skyblock.commands.goto:
-    default: op
+    default: false
   skyblock.command.reload:
+    default: false
+# Bypass permissions
+  skyblock.bypass.protection:
+    default: false
+  skyblock.bypass.cooldown:
+    default: false
+# Group permissions
+  skyblock.group.player:
+    default: true
+    children:
+      skyblock.commands.skyblock: true
+      skyblock.commands.restart: true
+      skyblock.commands.info: true
+      skyblock.command.challenge: true
+      skyblock.command.rank: true
+      skyblock.command.invite: true
+      skyblock.command.kick: true
+      skyblock.command.leave: true
+      skyblock.command.home: true
+      skyblock.command.transfer: true
+      skyblock.command.sethome: true
+      skyblock.command.warp: true
+      skyblock.command.togglewarp: true
+  skyblock.group.moderator:
     default: op
-# Other permissions
-  skyblock.protection.bypass:
+    children:
+      skyblock.group.player: true
+      skyblock.command.admin: true
+      skyblock.commands.info.others: true
+      skyblock.commands.restart.others: true
+      skyblock.commands.goto: true
+      skyblock.bypass.cooldown: true
+      skyblock.bypass.protection: true
+  skyblock.group.admin:
     default: op
-  skyblock.cooldown.bypass:
-    default: op
+    children:
+      skyblock.group.moderator: true
+      skyblock.commands.template: true
+      skyblock.command.reload: true
