@@ -62,7 +62,7 @@ public class SetSpawnCommand implements ICommand
 	@Override
 	public boolean onCommand( CommandSender sender, String parent, String label, String[] args ) throws BadArgumentException
 	{
-		if (args.length > 1)
+		if (args.length != 0)
 			return false;
 		
 		Player player = (Player)sender;
