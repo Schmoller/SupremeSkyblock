@@ -43,6 +43,10 @@ island:
   # In this area, anyone can build or destroy blocks
   # This amount will be deducted from the amount of space the island has
   neutral-zone-size: 4
+  # Notify players when they leave the protected area of an island
+  notify-on-leave: true
+  # Notify players when they enter the protected area of an island
+  notify-on-enter: true
 
 # Below are the worlds that will be used as skyblock worlds
 # You can have as many as you like.

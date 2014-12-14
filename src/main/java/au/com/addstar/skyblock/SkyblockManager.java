@@ -59,6 +59,8 @@ public class SkyblockManager
 	private long mIslandRestartCooldown;
 	private int mIslandMaxMembers;
 	private int mIslandNeutralSize;
+	private boolean mIslandNotifyOnLeave;
+	private boolean mIslandNotifyOnEnter;
 	
 	private boolean mPlayerExcludeOwn;
 	private int mPlayerMaxMembership;
@@ -171,6 +173,9 @@ public class SkyblockManager
 		mIslandNeutralSize = island.getInt("neutral-zone-size", 4);
 		if (mIslandNeutralSize < 0)
 			mIslandNeutralSize = 4;
+		
+		mIslandNotifyOnLeave = island.getBoolean("notify-on-leave", true);
+		mIslandNotifyOnEnter = island.getBoolean("notify-on-enter", true);
 		
 		mTemplate[Environment.NORMAL.ordinal()] = load(island.getString("template", "original"));
 		mTemplate[Environment.NETHER.ordinal()] = load(island.getString("template-nether", "original_nether"));
@@ -429,6 +434,16 @@ public class SkyblockManager
 	public long getIslandRestartCooldown()
 	{
 		return mIslandRestartCooldown;
+	}
+	
+	public boolean getIslandNotifyOnLeave()
+	{
+		return mIslandNotifyOnLeave;
+	}
+	
+	public boolean getIslandNotifyOnEnter()
+	{
+		return mIslandNotifyOnEnter;
 	}
 	
 	public IslandTemplate getTemplate(Environment environment)
