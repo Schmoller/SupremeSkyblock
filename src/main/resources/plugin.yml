@@ -59,6 +59,8 @@ permissions:
     default: false
   skyblock.command.reload:
     default: false
+  skyblock.commands.setspawnisland:
+    default: false
 # Bypass permissions
   skyblock.bypass.protection:
     default: false
@@ -97,3 +99,4 @@ permissions:
       skyblock.group.moderator: true
       skyblock.commands.template: true
       skyblock.command.reload: true
+      skyblock.commands.setspawnisland: true

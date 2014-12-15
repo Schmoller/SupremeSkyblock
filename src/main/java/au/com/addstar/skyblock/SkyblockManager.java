@@ -52,10 +52,12 @@ public class SkyblockManager
 	
 	private long mGeneralCleanupCutoff;
 	private boolean mGeneralUseNether;
+	private boolean mGeneralSpawnIslands;
 	
 	private int mIslandChunkSize;
 	private int mIslandHeight;
 	private IslandTemplate[] mTemplate;
+	private IslandTemplate mSpawnTemplate;
 	private long mIslandRestartCooldown;
 	private int mIslandMaxMembers;
 	private int mIslandNeutralSize;
@@ -92,6 +94,22 @@ public class SkyblockManager
 			mVault = new VaultWrapper();
 		else
 			mVault = new NullWrapper();
+		
+		if (mGeneralSpawnIslands)
+		{
+			boolean added = false;
+			for (SkyblockWorld world : mWorlds.values())
+			{
+				if (world.getSpawnIsland() == null)
+				{
+					world.setSpawnIsland(world.getGrid().getNextEmpty());
+					added = true;
+				}
+			}
+			
+			if (added)
+				save();
+		}
 	}
 	
 	public void reload()
@@ -179,6 +197,7 @@ public class SkyblockManager
 		
 		mTemplate[Environment.NORMAL.ordinal()] = load(island.getString("template", "original"));
 		mTemplate[Environment.NETHER.ordinal()] = load(island.getString("template-nether", "original_nether"));
+		mSpawnTemplate = load(island.getString("template-spawn", "spawn"));
 		
 		// Load player options
 		ConfigurationSection player = config.getConfigurationSection("player");
@@ -203,6 +222,7 @@ public class SkyblockManager
 		mGeneralCleanupCutoff = Utilities.parseTimeDiffSafe(config.getString("general.cleanup-cutoff", "4mo"), TimeUnit.DAYS.toMillis(520), mPlugin.getLogger());
 		
 		mGeneralUseNether = config.getBoolean("general.use-nether", true);
+		mGeneralSpawnIslands = config.getBoolean("general.spawn-islands", true);
 	}
 	
 	private IslandTemplate load(String name)
@@ -451,6 +471,11 @@ public class SkyblockManager
 		return mTemplate[environment.ordinal()];
 	}
 	
+	public IslandTemplate getSpawnTemplate()
+	{
+		return mSpawnTemplate;
+	}
+	
 	public int getIslandMaxMembers()
 	{
 		return mIslandMaxMembers;
@@ -489,6 +514,11 @@ public class SkyblockManager
 	public boolean getUsesNether()
 	{
 		return mGeneralUseNether;
+	}
+	
+	public boolean getCreateSpawnIslands()
+	{
+		return mGeneralSpawnIslands;
 	}
 	
 	public File getWorldFolder(String world)

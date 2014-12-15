@@ -24,12 +24,15 @@ import org.bukkit.inventory.ItemStack;
 
 import au.com.addstar.monolith.lookup.Lookup;
 import au.com.addstar.monolith.lookup.MaterialDefinition;
+import au.com.addstar.skyblock.SkyblockManager;
 import au.com.addstar.skyblock.SkyblockPlugin;
+import au.com.addstar.skyblock.SkyblockWorld;
 import au.com.addstar.skyblock.island.Island;
 
 public class Utilities
 {
 	public static final UUID nobody = UUID.fromString("00000000-0000-0000-0000-000000000000");
+	public static final UUID spawn = UUID.fromString("00000000-0000-0000-0000-000000000001");
 	
 	@SuppressWarnings( "deprecation" )
 	public static OfflinePlayer getPlayer(String nameOrUUID)
@@ -216,11 +219,24 @@ public class Utilities
 	
 	public static void sendPlayerHome(Player player)
 	{
-		Island theirIsland = SkyblockPlugin.getPlugin(SkyblockPlugin.class).getManager().getIsland(player.getUniqueId());
+		SkyblockManager manager = SkyblockPlugin.getPlugin(SkyblockPlugin.class).getManager();
+		Island theirIsland = manager.getIsland(player.getUniqueId());
 		if (theirIsland != null)
 			Utilities.safeTeleport(player, theirIsland.getIslandSpawn());
 		else
-			Utilities.safeTeleport(player, Bukkit.getWorlds().get(0).getSpawnLocation());
+		{
+			SkyblockWorld world = manager.getSkyblockWorld(player.getWorld());
+			if (world != null)
+			{
+				Island spawn = world.getSpawnIsland();
+				if (spawn != null)
+					Utilities.safeTeleport(player, spawn.getIslandSpawn());
+				else
+					Utilities.safeTeleport(player, Bukkit.getWorlds().get(0).getSpawnLocation());
+			}
+			else
+				Utilities.safeTeleport(player, Bukkit.getWorlds().get(0).getSpawnLocation());
+		}
 	}
 	
 	public static void updateNames(Player player, Island island)

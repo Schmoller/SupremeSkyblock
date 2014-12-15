@@ -13,6 +13,8 @@ general:
   cleanup-cutoff: 4mo
   # If true, the nether will be be used in skyblock. If not, the nether will not be accessible, though you can use another plugin to provide it
   use-nether: true
+  # If true, each skyblock world will have a spawn island assigned
+  spawn-islands: true
 
 player:
   # When true, the players own island does not count towards the max-membership count 
@@ -35,6 +37,8 @@ island:
   template: original
   # The template to use for building the nether side islands. These are located in the templates folder or inside the jar. Default is 'original_nether'
   template-nether: original_nether
+  # The template to use for building the spawn island
+  template-spaawn: spawn
   # The minimum time between restarts 
   restart-cooldown: 1d
   # The maximum number of players that can be members of an island

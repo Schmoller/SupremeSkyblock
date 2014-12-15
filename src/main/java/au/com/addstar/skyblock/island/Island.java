@@ -168,7 +168,13 @@ public class Island
 	
 	public void placeIsland(Environment environment)
 	{
-		mWorld.getManager().getTemplate(environment).placeAt(getIslandOrigin(environment));
+		IslandTemplate template;
+		if (mOwner.equals(Utilities.spawn))
+			template = mWorld.getManager().getSpawnTemplate();
+		else
+			template = mWorld.getManager().getTemplate(environment);
+		
+		template.placeAt(getIslandOrigin(environment));
 	}
 	
 	public boolean canAssist(Player player)

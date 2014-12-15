@@ -42,6 +42,8 @@ public class SkyblockWorld
 	private int mIslandChunkSize;
 	private int mIslandHeight;
 	
+	private Island mSpawn;
+	
 	private SetMultimap<UUID, Island> mOwnerMap;
 	
 	public SkyblockWorld(String name, SkyblockManager manager)
@@ -186,6 +188,49 @@ public class SkyblockWorld
 		return island;
 	}
 	
+	public Coord getIslandCoordAt(Location location)
+	{
+		// Chunk coords
+		int x = location.getBlockX() >> 4;
+		int z = location.getBlockZ() >> 4;
+		
+		// island coords
+		x = (int)Math.floor(x / (float)mIslandChunkSize);
+		z = (int)Math.floor(z / (float)mIslandChunkSize);
+		
+		return new Coord(x, z);
+	}
+	
+	public Island getSpawnIsland()
+	{
+		return mSpawn;
+	}
+	
+	public void setSpawnIsland(Coord pos) throws IllegalArgumentException
+	{
+		Validate.isTrue(mGrid.get(pos) == null, "That position is already assigned");
+		
+		if (mSpawn != null)
+			mSpawn.abandonIsland();
+		
+		mManager.getPlugin().getLogger().info(String.format("Creating spawn island %s", pos));
+		Island island = new Island(Utilities.spawn, Collections.<UUID>emptyList(), pos, this);
+		
+		// Assign the space
+		mGrid.set(island);
+
+		IslandTemplate template = mManager.getTemplate(Environment.NORMAL);
+		
+		// Configure the island
+		island.setIslandSpawn(template.getSpawnLocation(island.getIslandOrigin(Environment.NORMAL)));
+		island.setOwnerName("Spawn");
+		
+		// Place it
+		island.placeIsland();
+		
+		mSpawn = island;
+	}
+	
 	public SkyblockManager getManager()
 	{
 		return mManager;
@@ -288,6 +333,8 @@ public class SkyblockWorld
 			
 			if (owner.equals(Utilities.nobody))
 				mManager.queueAbandoned(island);
+			else if (owner.equals(Utilities.spawn))
+				mSpawn = island;
 			else
 			{
 				mOwnerMap.put(owner, island);
