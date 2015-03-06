@@ -1,6 +1,7 @@
 package au.com.addstar.skyblock;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -138,7 +139,6 @@ public class GameplayListener implements Listener
 			island.markScoreDirty();
 	}
 	
-	@SuppressWarnings( "deprecation" )
 	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInteract(PlayerInteractEvent event)
 	{
@@ -167,7 +167,7 @@ public class GameplayListener implements Listener
 					if (event.getClickedBlock().getType() == Material.OBSIDIAN && mManager.getPlayerCanReverseLava())
 					{
 						// Confirm that they could have picked the block up
-						if (!event.getPlayer().getTargetBlock(null, 10).equals(event.getClickedBlock()))
+						if (!event.getPlayer().getTargetBlock((HashSet<Material>)null, 10).equals(event.getClickedBlock()))
 							return;
 						
 						ItemStack item = new ItemStack(Material.LAVA_BUCKET);
@@ -194,7 +194,7 @@ public class GameplayListener implements Listener
 					if ((event.getClickedBlock().getType() == Material.STONE || event.getClickedBlock().getType() == Material.COBBLESTONE) && mManager.getPlayerCanReverseWater())
 					{
 						// Confirm that they could have picked the block up
-						if (!event.getPlayer().getTargetBlock(null, 10).equals(event.getClickedBlock()))
+						if (!event.getPlayer().getTargetBlock((HashSet<Material>)null, 10).equals(event.getClickedBlock()))
 							return;
 						
 						ItemStack item = new ItemStack(Material.WATER_BUCKET);

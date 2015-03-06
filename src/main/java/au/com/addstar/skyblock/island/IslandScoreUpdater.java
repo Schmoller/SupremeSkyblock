@@ -15,6 +15,7 @@ import com.google.common.collect.Iterators;
 import au.com.addstar.skyblock.PointLookup;
 import au.com.addstar.skyblock.SkyblockWorld;
 import au.com.addstar.skyblock.challenge.Challenge;
+import au.com.addstar.skyblock.challenge.IslandBasedChallenge;
 
 public class IslandScoreUpdater extends BukkitRunnable
 {
@@ -127,6 +128,13 @@ public class IslandScoreUpdater extends BukkitRunnable
 			}
 			
 			mScore += mLookup.getScore(block);
+		}
+		
+		// Check challenges based on the island
+		for (Challenge challenge : mIsland.getWorld().getManager().getChallenges().getChallenges())
+		{
+			if (challenge instanceof IslandBasedChallenge)
+				((IslandBasedChallenge)challenge).onCalculateScore(mIsland, mCounts);
 		}
 		
 		// Add the points for completed challenges

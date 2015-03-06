@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import au.com.addstar.skyblock.challenge.types.CraftChallenge;
 import au.com.addstar.skyblock.challenge.types.DetectChallenge;
+import au.com.addstar.skyblock.challenge.types.DetectIslandChallenge;
 import au.com.addstar.skyblock.challenge.types.MobKillChallenge;
 import au.com.addstar.skyblock.challenge.types.SubmitChallenge;
 
@@ -13,7 +14,8 @@ public enum ChallengeType
 	Submit("submit", SubmitChallenge.class),
 	Detect("detect", DetectChallenge.class),
 	Craft("craft", CraftChallenge.class),
-	Kill("kill", MobKillChallenge.class);
+	Kill("kill", MobKillChallenge.class),
+	DetectIsland("detectIsland", DetectIslandChallenge.class);
 	
 	private String mName;
 	private Constructor<? extends Challenge> mNewChallenge;
